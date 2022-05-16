@@ -35,23 +35,15 @@ class _HomePageState extends State<HomePage> {
     final userTestsBloc = BlocProvider.of<UserTestsBloc>(context);
     return Builder(
       builder: (context) {
-        final userId = context.select(
-              (AuthenticationBloc bloc) => bloc.state.user.id,
-        );
-        DateTime now = DateTime.now();
-        userBloc.add(GetUser(id: userId));
-        logsBloc.add(GetLogsFromTime(id: userId, time: '${now.year}-${now.month}-${now.day}'));
-        userLogsBloc.add(GetUserLogs(id: userId));
-        userTestsBloc.add(GetUserTests(id: userId));
-
-        // final isTeacher = context.select(
+        // final role = context.select(
         //       (AuthenticationBloc bloc) => bloc.state.user.role,
         // );
-        // if(isTeacher == "editor") {
-        //   return const TeacherCabinetPage();
-        // } else {
-        //   return StatisticPage(userId: userId);
-        // }
+        // DateTime now = DateTime.now();
+        // userBloc.add(GetUser(id: userId));
+        // logsBloc.add(GetLogsFromTime(id: userId, time: '${now.year}-${now.month}-${now.day}'));
+        // userLogsBloc.add(GetUserLogs(id: userId));
+        // userTestsBloc.add(GetUserTests(id: userId));
+
         return const TeacherCabinetPage();
       },
     );

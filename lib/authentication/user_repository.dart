@@ -16,13 +16,13 @@ class UserRepository {
 
   Future<AuthUser?> getUser(login, password) async {
     final response = await http.post(
-        Uri.parse('http://semantic-portal.net/api/user/check/$login/$password'),
+      Uri.parse('http://semantic-portal.net/api/user/check/$login/$password'),
     );
 
     if(jsonDecode(response.body)["login"] == true) {
       return Future.delayed(
         const Duration(milliseconds: 300),
-            () => _user = AuthUser(id: jsonDecode(response.body)["id"], login: "-", role: "-"),
+            () => _user = AuthUser(login: "${jsonDecode(response.body)['login']}", role: "-"),
       );
     }
   }
