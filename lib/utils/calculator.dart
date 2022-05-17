@@ -6,6 +6,19 @@ import 'package:intl/intl.dart';
 
 class Calculator {
   /// Counts progress for course
+  int countActiveUsers(users) {
+    return users.length;
+  }
+
+  double calculateAverageTestResult(users) {
+
+    return 40.0;
+  }
+
+  double calculateAverageSpendTime(users) {
+    return 40.0;
+  }
+
   int countProgress(userLogs, course) {
     int progress = 0;
     double time = 0;
@@ -25,6 +38,7 @@ class Calculator {
 
     return progress;
   }
+
 
   /// Counts time spent on course
   double countTime(userLogs, course) {

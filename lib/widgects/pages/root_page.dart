@@ -1,4 +1,6 @@
 import 'package:diplom/authentication/authentication_bloc.dart';
+import 'package:diplom/blocs/allCourses/all_courses_bloc.dart';
+import 'package:diplom/blocs/allCourses/all_courses_event.dart';
 import 'package:diplom/blocs/logs/logs_bloc.dart';
 import 'package:diplom/blocs/logs/logs_event.dart';
 import 'package:diplom/blocs/user/user_bloc.dart';
@@ -33,16 +35,19 @@ class _HomePageState extends State<HomePage> {
     final logsBloc = BlocProvider.of<LogsBloc>(context);
     final userLogsBloc = BlocProvider.of<UserLogsBloc>(context);
     final userTestsBloc = BlocProvider.of<UserTestsBloc>(context);
+    final allCoursesBloc = BlocProvider.of<AllCoursesBloc>(context);
     return Builder(
       builder: (context) {
         // final role = context.select(
         //       (AuthenticationBloc bloc) => bloc.state.user.role,
         // );
+        //const userId = "140";
         // DateTime now = DateTime.now();
         // userBloc.add(GetUser(id: userId));
         // logsBloc.add(GetLogsFromTime(id: userId, time: '${now.year}-${now.month}-${now.day}'));
         // userLogsBloc.add(GetUserLogs(id: userId));
         // userTestsBloc.add(GetUserTests(id: userId));
+        allCoursesBloc.add(const GetAllCourses());
 
         return const TeacherCabinetPage();
       },

@@ -60,10 +60,7 @@ class Courses extends StatelessWidget {
                               BlocProvider.of<CourseBloc>(context);
                           if (userState is UserLogsLoaded) {
                             return CourseWidget(
-                              course: course['course'],
-                              userId: userId,
-                              userLogs: userState.userLogs,
-                              courseBloc: courseBloc,
+                              course: course,
                             );
                           } else {
                             return Container();

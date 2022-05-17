@@ -1,17 +1,16 @@
 import 'dart:collection';
 import 'dart:ui';
 import 'package:diplom/blocs/course/course_bloc.dart';
-import 'package:diplom/blocs/course/course_event.dart';
-import 'package:diplom/blocs/course/course_state.dart';
-import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
-import 'package:diplom/blocs/userLogs/user_logs_state.dart';
+import 'package:diplom/models/course.dart';
 import 'package:diplom/widgects/teacher_course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'course_widget.dart';
+
+import '../blocs/userLogs/user_logs_bloc.dart';
+import '../blocs/userLogs/user_logs_state.dart';
 
 class AllCourses extends StatelessWidget {
-  final List<dynamic> courses;
+  final List<ShortCourse> courses;
 
   const AllCourses({Key? key, required this.courses})
       : super(key: key);
@@ -54,20 +53,16 @@ class AllCourses extends StatelessWidget {
                     for (var course in courses)
                       BlocProvider<CourseBloc>(
                         create: (_) => CourseBloc(),
-                        child: BlocBuilder<UserLogsBloc, UserLogsState>(
-                            builder: (context, userState) {
+                        child: Builder(
+                        builder: (context) {
                           final courseBloc =
-                              BlocProvider.of<CourseBloc>(context);
-                          if (userState is UserLogsLoaded) {
-                            return TeacherCourseWidget(
-                              course: course['course'],
-                              userLogs: userState.userLogs,
-                              courseBloc: courseBloc,
-                            );
-                          } else {
-                            return Container();
+                          BlocProvider.of<CourseBloc>(context);
+                          return TeacherCourseWidget(
+                            course: course.course,
+                            courseBloc: courseBloc,
+                          );
                           }
-                        }),
+                        ),
                       ),
                   ]
                 ],

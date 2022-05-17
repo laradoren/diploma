@@ -49,7 +49,7 @@ class CourseUser {
 class ShortCourse {
   final String course;
   final String caption;
-  final String image;
+  final String? image;
 
   const ShortCourse({
     required this.course,

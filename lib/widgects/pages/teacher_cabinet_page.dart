@@ -2,37 +2,20 @@ import 'dart:ui';
 
 import 'package:diplom/authentication/authentication.dart';
 import 'package:diplom/authentication/authentication_bloc.dart';
-import 'package:diplom/blocs/logs/logs_bloc.dart';
-import 'package:diplom/blocs/logs/logs_event.dart';
-import 'package:diplom/blocs/logs/logs_state.dart';
+import 'package:diplom/blocs/allCourses/all_courses_state.dart';
+import 'package:diplom/blocs/allCourses/all_courses_bloc.dart';
 import 'package:diplom/blocs/user/user_bloc.dart';
-import 'package:diplom/blocs/user/user_event.dart';
 import 'package:diplom/blocs/user/user_state.dart';
 import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
-import 'package:diplom/blocs/userLogs/user_logs_event.dart';
 import 'package:diplom/blocs/userLogs/user_logs_state.dart';
-import 'package:diplom/blocs/userTests/user_tests_bloc.dart';
-import 'package:diplom/blocs/userTests/user_tests_state.dart';
 import 'package:diplom/navigation/constants/nav_bar_items.dart';
 import 'package:diplom/navigation/navigation_cubit.dart';
 import 'package:diplom/navigation/navigation_state.dart';
 import 'package:diplom/widgects/diagrams_widjet.dart';
-import 'package:diplom/widgects/profile.dart';
-import 'package:diplom/widgects/achievements_widget.dart';
-import 'package:diplom/widgects/courses_widget.dart';
 import 'package:diplom/widgects/history_widget.dart';
-import 'package:diplom/widgects/average_dashboard_widget.dart';
-import 'package:diplom/widgects/rare_achievements_widget.dart';
+import 'package:diplom/widgects/all_courses_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../blocs/courseTests/course_tests_bloc.dart';
-import '../../blocs/courseTests/course_tests_state.dart';
-import '../../blocs/userBestMark/user_best_mark_bloc.dart';
-import '../../blocs/userBestMark/user_best_mark_state.dart';
-import '../../blocs/weekLogs/week_logs_bloc.dart';
-import '../../blocs/weekLogs/week_logs_state.dart';
-import '../all_courses_widget.dart';
 
 class TeacherCabinetPage extends StatefulWidget {
   const TeacherCabinetPage({Key? key}) : super(key: key);
@@ -52,8 +35,6 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
 
   @override
   Widget build(BuildContext context) {
-    final logsBloc = BlocProvider.of<LogsBloc>(context);
-    final userLogsBloc = BlocProvider.of<UserLogsBloc>(context);
     return MultiBlocListener(
       listeners: [
         BlocListener<UserBloc, UserState>(
@@ -113,12 +94,10 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
                     if (state.navbarItem == NavbarItem.statistics) {
                       return Column(
                         children: [
-                          BlocBuilder<UserBloc, UserState>(
+                          BlocBuilder<AllCoursesBloc, AllCoursesState>(
                               builder: (context, state) {
-                                if (state is UserLoaded) {
-                                  return AllCourses(
-                                      courses: state.user.courses,
-                                  );
+                                if (state is AllCoursesLoaded) {
+                                  return AllCourses(courses: state.courses);
                                 } else {
                                   return Container();
                                 }

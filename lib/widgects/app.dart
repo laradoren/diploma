@@ -2,6 +2,7 @@ import 'package:diplom/authentication/authentication_bloc.dart';
 import 'package:diplom/authentication/authentication_repository.dart';
 import 'package:diplom/authentication/authentication_state.dart';
 import 'package:diplom/authentication/user_repository.dart';
+import 'package:diplom/blocs/allCourses/all_courses_bloc.dart';
 import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
 import 'package:diplom/blocs/logs/logs_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
 import 'package:diplom/blocs/userTests/user_tests_bloc.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
 import 'package:diplom/navigation/navigation_cubit.dart';
+import 'package:diplom/widgects/all_courses_widget.dart';
 import 'package:diplom/widgects/logic_page.dart';
 import 'package:diplom/widgects/splash.dart';
 import 'package:diplom/widgects/pages/root_page.dart';
@@ -60,6 +62,12 @@ class App extends StatelessWidget {
           ),
           BlocProvider<CourseTestsBloc>(
             create: (_) => CourseTestsBloc(),
+          ),
+          BlocProvider<AllCoursesBloc>(
+            create: (_) => AllCoursesBloc(),
+          ),
+          BlocProvider<CourseBloc>(
+            create: (_) => CourseBloc(),
           ),
         ],
         child: AppView(),
