@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:diplom/models/user.dart';
+import 'package:diplom/models/course.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/models/log.dart';
 import 'package:http/http.dart' as http;
 
@@ -55,6 +57,26 @@ Future<List<UserLog>> fetchUserLogsFromTime(id, time) async {
   } else {
     throw Exception("Failed to fetch user logs by id $id");
   }
+}
+
+/// Fetches user logs from selected time by user id
+Future<List<UsersLogsByCourse>> fetchUsersLogsByCourseFromTime(users) async {
+  final List<UsersLogsByCourse> finalUsersLogsList = [];
+  for (var user in users) {
+    final response = await http.get(Uri.parse(
+        'http://semantic-portal.net/log/api/user/${user.userId}/from/${user.enrollDate}'));
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      final newArray = parsed.map<UserLog>((json) => UserLog.fromMap(json))
+          .toList();
+
+      finalUsersLogsList.add(
+          UsersLogsByCourse(userId: user.userId, logs: newArray));
+    } else {
+      throw Exception("Failed to fetch user logs by id ${user.userid}");
+    }
+  }
+  return finalUsersLogsList;
 }
 
 /// Fetches user logs between selected time by user id

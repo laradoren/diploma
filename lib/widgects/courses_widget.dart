@@ -59,9 +59,7 @@ class Courses extends StatelessWidget {
                           final courseBloc =
                               BlocProvider.of<CourseBloc>(context);
                           if (userState is UserLogsLoaded) {
-                            return CourseWidget(
-                              course: course,
-                            );
+                            return Container();
                           } else {
                             return Container();
                           }

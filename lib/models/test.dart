@@ -7,7 +7,7 @@ class Test {
   final String? timeStart;
   final String? correctCount;
   final String? wrongCount;
-  final String? percentage;
+  final String percentage;
 
   const Test({
     required this.id,

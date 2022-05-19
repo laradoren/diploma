@@ -4,9 +4,16 @@ import 'dart:ui';
 import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/course/course_event.dart';
 import 'package:diplom/blocs/course/course_state.dart';
+import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
+import 'package:diplom/blocs/courseTests/course_tests_state.dart';
+import 'package:diplom/blocs/courseTests/course_tests_event.dart';
+import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_bloc.dart';
+import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_event.dart';
+import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_state.dart';
 import 'package:diplom/widgects/course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 extension StringExtension on String {
   String capitalize() {
@@ -17,16 +24,21 @@ extension StringExtension on String {
 class TeacherCourseWidget extends StatelessWidget {
   final String course;
   final CourseBloc courseBloc;
+  final UsersLogsByCoursesBloc usersLogsBloc;
+  final CourseTestsBloc courseTestsBloc;
 
   const TeacherCourseWidget(
       {Key? key,
       required this.course,
-      required this.courseBloc})
+      required this.courseBloc,
+        required this.usersLogsBloc,
+      required this.courseTestsBloc})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     courseBloc.add(GetCourse(course: course));
+    courseTestsBloc.add(GetCourseTests(course: course));
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.all(0),
@@ -40,7 +52,24 @@ class TeacherCourseWidget extends StatelessWidget {
           BlocBuilder<CourseBloc, CourseState>(
               builder: (context, courseState) {
                 if (courseState is CourseLoaded) {
-                  return CourseWidget(course: courseState.course);
+                  usersLogsBloc.add(GetUsersLogsByCoursesFromTime(users: courseState.course.users));
+                  return BlocBuilder<UsersLogsByCoursesBloc, UsersLogsByCoursesState>(
+                    builder: (context, usersLogsByCourseState) {
+                    if (usersLogsByCourseState is UsersLogsByCoursesLoaded) {
+                      return BlocBuilder<CourseTestsBloc , CourseTestsState>(
+                      builder: (context, courseTestsState) {
+                        if (courseTestsState is CourseTestsLoaded) {
+                          return CourseWidget(course: courseState.course, usersLogs:
+                          usersLogsByCourseState.usersLogs,
+                          courseTests: courseTestsState.courseTests);
+                        } else {
+                          return Container();
+                        }
+                      });
+                    } else {
+                      return _buildLoading();
+                    }
+                    });
                 } else {
                   return Container();
                 }
@@ -58,6 +87,8 @@ class TeacherCourseWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 }
 
 

@@ -1,7 +1,10 @@
 import 'dart:collection';
 import 'dart:ui';
 import 'package:diplom/blocs/course/course_bloc.dart';
+import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
+import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_bloc.dart';
 import 'package:diplom/models/course.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/teacher_course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,10 +60,28 @@ class AllCourses extends StatelessWidget {
                         builder: (context) {
                           final courseBloc =
                           BlocProvider.of<CourseBloc>(context);
-                          return TeacherCourseWidget(
-                            course: course.course,
-                            courseBloc: courseBloc,
-                          );
+                          return BlocProvider<UsersLogsByCoursesBloc>(
+                            create: (_) => UsersLogsByCoursesBloc(),
+                            child: Builder(
+                            builder: (context) {
+                              final usersLogsBloc =
+                              BlocProvider.of<UsersLogsByCoursesBloc>(context);
+                              return BlocProvider<CourseTestsBloc>(
+                                  create: (_) => CourseTestsBloc(),
+                                  child: Builder(
+                                      builder: (context) {
+                                        final courseTestsBloc =
+                                        BlocProvider.of<CourseTestsBloc>(context);
+                                        return TeacherCourseWidget(
+                                            course: course.course,
+                                            courseBloc: courseBloc,
+                                            usersLogsBloc: usersLogsBloc,
+                                          courseTestsBloc: courseTestsBloc,
+                                        );
+                                      })
+                              );
+                            })
+                            );
                           }
                         ),
                       ),

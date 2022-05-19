@@ -9,6 +9,7 @@ import 'package:diplom/models/log.dart';
 import 'package:diplom/models/mark.dart';
 import 'package:diplom/models/test.dart';
 import 'package:diplom/models/user.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:http/http.dart' as http;
 
 class UserRepository {
@@ -57,5 +58,9 @@ class UserRepository {
 
   Future<Mark> getUserBestMark(id, course) async {
     return fetchUserBestCourseMarkById(id, course);
+  }
+
+  Future<List<UsersLogsByCourse>> getUsersLogsByCoursesFromTime(users){
+    return fetchUsersLogsByCourseFromTime(users);
   }
 }

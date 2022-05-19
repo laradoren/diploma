@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:diplom/models/course.dart';
+import 'package:diplom/models/test.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/utils/calculator.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +15,13 @@ extension StringExtension on String {
 
 class CourseWidget extends StatefulWidget {
   final Course course;
+  final List<UsersLogsByCourse> usersLogs;
+  final List<Test> courseTests;
 
   const CourseWidget(
       {Key? key,
-        required this.course})
+        required this.course,
+      required this.usersLogs, required this.courseTests})
       : super(key: key);
 
   @override
@@ -25,16 +30,16 @@ class CourseWidget extends StatefulWidget {
 
 class _CourseWidgetState extends State<CourseWidget> {
   int _allUsers = 0;
-  double _averageTestResult = 0.0;
-  double _averageUserTime = 0.0;
+  int _averageTestResult = 0;
+  String _averageUserTime = "";
 
   @override
   void initState() {
     final Calculator calculator = Calculator();
     setState(() {
       _allUsers = calculator.countActiveUsers(widget.course.users);
-      _averageTestResult = calculator.calculateAverageTestResult(widget.course.users);
-      _averageUserTime = calculator.calculateAverageSpendTime(widget.course.users);
+      _averageTestResult = calculator.calculateAverageTestResult(widget.course.users, widget.courseTests);
+      _averageUserTime = calculator.calculateAverageSpendTime(widget.usersLogs, widget.course.branches);
     });
     super.initState();
   }
@@ -106,7 +111,7 @@ class _CourseWidgetState extends State<CourseWidget> {
                                 'assets/images/star_icon.png', height: 20, width: 20),
                           ),
                         ),
-                        TextSpan(text: '$_averageTestResult'),
+                        TextSpan(text: '$_averageTestResult %'),
                       ],
                     ),
                   ),

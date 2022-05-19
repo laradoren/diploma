@@ -10,13 +10,68 @@ class Calculator {
     return users.length;
   }
 
-  double calculateAverageTestResult(users) {
-
-    return 40.0;
+  int calculateAverageTestResult(users, courseTests) {
+    int allCoursePercentage = 0;
+    for(final test in courseTests) {
+      allCoursePercentage = allCoursePercentage + int.parse(test.percentage);
+    }
+    return (allCoursePercentage/users.length).round();
   }
 
-  double calculateAverageSpendTime(users) {
-    return 40.0;
+  String calculateAverageSpendTime(usersLogs, courseBranches) {
+    final List<UserLog> filteredLog = [];
+    //TODO this cycles need to be replaced in the future;
+    for(final userLogs in usersLogs) {
+      final finalUserLog = userLogs.logs;
+      for(final userLog in finalUserLog) {
+        final branchesName = userLog.contentId.split(":");
+        for(final branch in branchesName) {
+          if(courseBranches.contains(branch)){
+            filteredLog.add(userLog);
+          }
+        }
+      }
+    }
+
+    int allSpendTime = 0;
+    for(final log in filteredLog) {
+      allSpendTime = allSpendTime + int.parse(log.seconds);
+    }
+
+    int averageSpendTime = (allSpendTime/usersLogs.length).round();
+
+    int spendHours = 0;
+    int spendMinutes = 0;
+    int spendSeconds = 0;
+
+    var averageTimeString = "";
+
+    if(averageSpendTime < 3600) {
+      if(averageSpendTime < 60) {
+        spendSeconds = (averageSpendTime % 60).round();
+      } else {
+        spendMinutes = (averageSpendTime / 60).round();
+        spendSeconds = (averageSpendTime % 60).round();
+      }
+    } else {
+      spendHours = (averageSpendTime / 3600).round();
+      spendMinutes = (averageSpendTime / 60).round();
+      spendSeconds = (averageSpendTime % 60).round();
+    }
+
+    if(spendHours > 0) {
+      averageTimeString = '$averageTimeString $spendHours h';
+    }
+
+    if(spendMinutes > 0) {
+      averageTimeString = '$averageTimeString $spendMinutes m';
+    }
+
+    if(spendSeconds > 0) {
+      averageTimeString = '$averageTimeString $spendSeconds s';
+    }
+
+    return averageTimeString.toString();
   }
 
   int countProgress(userLogs, course) {

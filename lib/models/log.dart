@@ -10,7 +10,7 @@ class UserLog {
   final String? contentId;
   final String? event;
   final String? time;
-  final String? seconds;
+  final String seconds;
   final String? parentLog;
   final String? status;
   final String? lastTime;
