@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class HistoryRow extends StatelessWidget {
+class WeeklyTextRow extends StatelessWidget {
   final String header;
   final String label;
 
-  const HistoryRow({
+  const WeeklyTextRow({
     Key? key,
     required this.header,
     required this.label,

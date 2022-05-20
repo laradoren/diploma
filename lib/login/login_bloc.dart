@@ -22,7 +22,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginUsernameChanged event,
     Emitter<LoginState> emit,
   ) {
-    final username = Username.dirty(event.username);
+    final username = Username.dirty("bakalavr22"/*event.username*/);
     emit(state.copyWith(
       username: username,
       status: Formz.validate([state.password, username]),
@@ -33,7 +33,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginPasswordChanged event,
     Emitter<LoginState> emit,
   ) {
-    final password = Password.dirty(event.password);
+    final password = Password.dirty("kpikpikpi"/*event.password*/);
     emit(state.copyWith(
       password: password,
       status: Formz.validate([password, state.username]),

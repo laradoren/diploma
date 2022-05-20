@@ -5,6 +5,7 @@ import 'package:diplom/models/course.dart';
 import 'package:diplom/models/test.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/utils/calculator.dart';
+import 'package:diplom/widgects/pages/course_page.dart';
 import 'package:flutter/material.dart';
 
 extension StringExtension on String {
@@ -46,7 +47,14 @@ class _CourseWidgetState extends State<CourseWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return OutlinedButton(
+        style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(0),
+    primary: Colors.white,
+    shadowColor: Colors.white,
+    side: const BorderSide(color: Colors.white, width: 0),
+    ),
+    child:  Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -142,6 +150,13 @@ class _CourseWidgetState extends State<CourseWidget> {
           ),
         ),
       ],
+    ),
+    onPressed: () {
+      Navigator.push( context, MaterialPageRoute(
+        builder: (context) => CoursePage(users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption,),
+        )
+      );
+    }
     );
   }
 }

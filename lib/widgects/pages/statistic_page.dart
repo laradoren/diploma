@@ -19,7 +19,7 @@ import 'package:diplom/navigation/navigation_state.dart';
 import 'package:diplom/widgects/profile.dart';
 import 'package:diplom/widgects/achievements_widget.dart';
 import 'package:diplom/widgects/courses_widget.dart';
-import 'package:diplom/widgects/history_widget.dart';
+import 'package:diplom/widgects/weekly_widget.dart';
 import 'package:diplom/widgects/average_dashboard_widget.dart';
 import 'package:diplom/widgects/rare_achievements_widget.dart';
 import 'package:flutter/material.dart';
@@ -193,7 +193,7 @@ class _StatisticPageState extends State<StatisticPage> {
                     ],
                   );
                 } else if (state.navbarItem == NavbarItem.history) {
-                  return const History();
+                  return const Weekly();
                 }
                 return Container();
               }),

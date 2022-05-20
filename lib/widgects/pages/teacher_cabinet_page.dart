@@ -12,7 +12,7 @@ import 'package:diplom/navigation/constants/nav_bar_items.dart';
 import 'package:diplom/navigation/navigation_cubit.dart';
 import 'package:diplom/navigation/navigation_state.dart';
 import 'package:diplom/widgects/diagrams_widjet.dart';
-import 'package:diplom/widgects/history_widget.dart';
+import 'package:diplom/widgects/weekly_widget.dart';
 import 'package:diplom/widgects/all_courses_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -105,9 +105,9 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
                         ],
                       );
                     } else if (state.navbarItem == NavbarItem.progress) {
-                      return const DiagramWidget();
+                      return const DiagramsWidget();
                     } else if (state.navbarItem == NavbarItem.history) {
-                      return const History();
+                      return const Weekly();
                     }
                     return Container();
                   }),
@@ -126,7 +126,7 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.watch_later),
-                label: 'Events',
+                label: 'Weekly',
               ),
             ],
           currentIndex: _selectedIndex,

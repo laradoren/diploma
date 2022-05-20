@@ -39,15 +39,7 @@ class TeacherCourseWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     courseBloc.add(GetCourse(course: course));
     courseTestsBloc.add(GetCourseTests(course: course));
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.all(0),
-        primary: Colors.white,
-        shadowColor: Colors.white,
-        side: const BorderSide(color: Colors.white, width: 0),
-      ),
-      onPressed: () {  },
-      child: Column(
+    return Column(
         children: [
           BlocBuilder<CourseBloc, CourseState>(
               builder: (context, courseState) {
@@ -84,8 +76,7 @@ class TeacherCourseWidget extends StatelessWidget {
           ),
           const Padding(padding: EdgeInsets.only(top: 16)),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildLoading() => const Center(child: CircularProgressIndicator());

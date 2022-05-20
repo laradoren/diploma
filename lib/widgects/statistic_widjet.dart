@@ -40,8 +40,6 @@ class _StatisticWidgetState extends State<StatisticWidget> {
     Calculator calculator = Calculator();
     _timeChartData =
         calculator.getTimeChartData(widget.userWeekLogs, widget.course);
-    _testChartData =
-        calculator.getTestsChartData(widget.courseTests, widget.bestMark);
     super.initState();
   }
 

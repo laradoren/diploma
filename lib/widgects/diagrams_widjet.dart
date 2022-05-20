@@ -9,18 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class DiagramWidget extends StatefulWidget {
+class DiagramsWidget extends StatefulWidget {
 
-  const DiagramWidget(
+  const DiagramsWidget(
       {Key? key,
       })
       : super(key: key);
 
   @override
-  State<DiagramWidget> createState() => _DiagramWidgetState();
+  State<DiagramsWidget> createState() => _DiagramsWidgetState();
 }
 
-class _DiagramWidgetState extends State<DiagramWidget> {
+class _DiagramsWidgetState extends State<DiagramsWidget> {
   static final List<ChartData> _timeChartData = <ChartData>[];
   static final List<ChartData> _testChartData = <ChartData>[];
 

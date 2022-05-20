@@ -251,16 +251,33 @@ class Calculator {
     return averageMark.roundToDouble();
   }
 
-  List<ChartData> getTestsChartData(courseTests, Mark bestMark) {
-    List<ChartData> chartData = <ChartData>[];
+  List filterUsersTestsByResult(tests) {
+    int counterForLow = 0;
+    int counterForAverage = 0;
+    int counterForHigh = 0;
 
-    chartData.add(ChartData('Average', getAverageTestsResult(courseTests)));
-    if(bestMark.mark != null) {
-      chartData.add(ChartData('You`re best', double.parse(bestMark.mark.toString())));
-    } else {
-      chartData.add(ChartData('You`re best', 0));
+    for(final test in tests) {
+      if(int.parse(test.percentage) <= 6) {
+        counterForLow++;
+      } else {
+        if(int.parse(test.percentage) >= 12) {
+          counterForHigh++;
+        } else {
+          counterForAverage++;
+        }
+      }
     }
 
+    return [counterForLow, counterForAverage, counterForHigh];
+  }
+
+  List<ChartData> calculateTestsGapsChartData(courseTests) {
+    List<ChartData> chartData = <ChartData>[];
+
+    List courseTestResult = filterUsersTestsByResult(courseTests);
+    chartData.add(ChartData('Low', courseTestResult[0]));
+    chartData.add(ChartData('High', courseTestResult[1]));
+    chartData.add(ChartData('Average', courseTestResult[2]));
 
     return chartData;
   }

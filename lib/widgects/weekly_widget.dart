@@ -2,13 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'history_row_widget.dart';
+import 'weekly_text_row_widget.dart';
 
-class History extends StatelessWidget {
-  const History({Key? key}) : super(key: key);
+class Weekly extends StatelessWidget {
+  const Weekly({Key? key}) : super(key: key);
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => const History());
+    return MaterialPageRoute<void>(builder: (_) => const Weekly());
   }
 
   @override
@@ -27,15 +27,15 @@ class History extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Column(
                 children: const [
-                  HistoryRow(
+                  WeeklyTextRow(
                     header: '1h 35m',
                     label: 'Something happened\nIdk',
                   ),
-                  HistoryRow(
+                  WeeklyTextRow(
                     header: '1h 45m',
                     label: 'Something happened\nIdk',
                   ),
-                  HistoryRow(
+                  WeeklyTextRow(
                     header: '1h 45m',
                     label: 'Something happened\nIdk',
                   ),

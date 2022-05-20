@@ -10,6 +10,7 @@ import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
 import 'package:diplom/blocs/userLogs/user_logs_state.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_state.dart';
+import 'package:diplom/widgects/diagram_widget.dart';
 import 'package:diplom/widgects/profile.dart';
 import 'package:diplom/widgects/rare_achievements_widget.dart';
 import 'package:diplom/widgects/statistic_widjet.dart';
@@ -17,16 +18,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../models/chart_data.dart';
+import '../../models/course.dart';
+import '../../models/test.dart';
+import '../../utils/calculator.dart';
+
 class CoursePage extends StatefulWidget {
-  final String course;
-  final double timeSpent;
-  final int courseProgress;
+  final List<CourseUser> users;
+  final List<Test> tests;
+  final String courseName;
 
   const CoursePage(
       {Key? key,
-      required this.course,
-      required this.courseProgress,
-      required this.timeSpent})
+      required this.users,
+      required this.tests,
+      required this.courseName})
       : super(key: key);
 
   @override
@@ -34,13 +40,13 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
+  static List<ChartData> _testChartData = <ChartData>[];
 
-  launchURL(String url) async {
-    if(await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+  @override
+  void initState() {
+    Calculator calculator = Calculator();
+    _testChartData = calculator.calculateTestsGapsChartData(widget.tests);
+    super.initState();
   }
 
   @override
@@ -51,53 +57,12 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(80, 71, 153, 1),
         toolbarHeight: 54,
-        title: Text(widget.course,
+        title: Text(widget.courseName,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
       ),
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          BlocBuilder<UserBloc, UserState>(
-            builder: (context, state) {
-              if (state is UserInitial) {
-                return Container();
-              } else if (state is UserLoading) {
-                return Container();
-              } else if (state is UserLoaded) {
-                return Profile(
-                  name: state.user.user.name,
-                  surname: state.user.user.surname,
-                  login: state.user.user.login,
-                );
-              } else if (state is UserError) {
-                return Container();
-              } else {
-                return Container();
-              }
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            child: ElevatedButton(
-              onPressed: () {
-                final url = 'http://semantic-portal.net/my:course:${widget.course.toLowerCase()}';
-
-                launchURL(url);
-              },
-              child: const Text(
-                "Go to course",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                )
-              ),
-              style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  primary: const Color.fromRGBO(41, 215, 41, 1),
-              ),
-            ),
-          ),
           TabBar(
             labelColor: const Color.fromRGBO(41, 215, 41, 1),
             unselectedLabelColor: const Color.fromRGBO(140, 138, 149, 1),
@@ -109,8 +74,8 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
             ),
             controller: _tabController,
             tabs: const [
-              Tab(text: 'STATISTIC', height: 32),
-              Tab(text: 'ACHIEVEMENTS', height: 32)
+              Tab(text: 'INFO', height: 32),
+              Tab(text: 'DIAGRAMS', height: 32)
             ],
           ),
           Container(
@@ -119,58 +84,14 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: [
+                Builder(builder: (context) {
+                }),
                 SingleChildScrollView(
-                  child: BlocBuilder<WeekLogsBloc, WeekLogsState>(
-                      builder: (context, weekLogsState) {
-                    if (weekLogsState is WeekLogsLoaded) {
-                      return BlocBuilder<UserBestMarkBloc, UserBestMarkState>(
-                          builder: (context, userBestMarkState) {
-                        if (userBestMarkState is UserBestMarkLoaded) {
-                          return BlocBuilder<CourseTestsBloc, CourseTestsState>(
-                              builder: (context, courseTestsState) {
-                            if (courseTestsState is CourseTestsLoaded) {
-                              return StatisticWidget(
-                                courseProgress: widget.courseProgress,
-                                userWeekLogs: weekLogsState.userWeekLogs,
-                                course: widget.course,
-                                timeSpent: widget.timeSpent,
-                                bestMark: userBestMarkState.userBestMark,
-                                courseTests: courseTestsState.courseTests,
-                              );
-                            } else {
-                              return Container();
-                            }
-                          });
-                        } else {
-                          return Container();
-                        }
-                      });
-                    } else {
-                      return Container();
-                    }
-                  }),
-                ),
-                SingleChildScrollView(
-                  child: BlocBuilder<UserBestMarkBloc, UserBestMarkState>(
-                      builder: (context, userBestMarkState) {
-                    if (userBestMarkState is UserBestMarkLoaded) {
-                      return BlocBuilder<UserLogsBloc, UserLogsState>(
-                          builder: (context, userLogsState) {
-                            if (userLogsState is UserLogsLoaded) {
-                              return RareAchievements(
-                                  course: widget.course,
-                                  bestMark: userBestMarkState.userBestMark,
-                                  userLogs: userLogsState.userLogs
-                              );
-                            } else {
-                              return Container();
-                            }
-                          });
-
-                    } else {
-                      return Container();
-                    }
-                  }),
+                  child: Builder(
+                      builder: (context) {
+                        return DiagramWidget(header: "Test results for courses", data: _testChartData, height: widget.tests.length);
+                      }
+                  ),
                 ),
               ],
             ),
