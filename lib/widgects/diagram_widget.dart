@@ -6,6 +6,7 @@ import 'package:diplom/models/mark.dart';
 import 'package:diplom/models/test.dart';
 import 'package:diplom/utils/calculator.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -32,10 +33,10 @@ class DiagramWidget extends StatelessWidget {
           thickness: 10,
           color: Color.fromRGBO(218, 220, 239, 1),
         ),
-        const Padding(
-            padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
-            child: Text("", style:
-                  TextStyle(
+        Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+            child: Text(header, style:
+                  const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Color.fromRGBO(93, 92, 99, 1)))),

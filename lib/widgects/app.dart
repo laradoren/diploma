@@ -5,6 +5,7 @@ import 'package:diplom/authentication/user_repository.dart';
 import 'package:diplom/blocs/allCourses/all_courses_bloc.dart';
 import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
+import 'package:diplom/blocs/courseUsers/course_users_bloc.dart';
 import 'package:diplom/blocs/logs/logs_bloc.dart';
 import 'package:diplom/blocs/user/user_bloc.dart';
 import 'package:diplom/blocs/userBestMark/user_best_mark_bloc.dart';
@@ -68,6 +69,9 @@ class App extends StatelessWidget {
           ),
           BlocProvider<CourseBloc>(
             create: (_) => CourseBloc(),
+          ),
+          BlocProvider<CourseUsersBloc>(
+            create: (_) => CourseUsersBloc(),
           ),
         ],
         child: AppView(),

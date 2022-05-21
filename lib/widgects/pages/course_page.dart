@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_state.dart';
+import 'package:diplom/blocs/courseUsers/course_users_event.dart';
 import 'package:diplom/blocs/user/user_bloc.dart';
 import 'package:diplom/blocs/user/user_state.dart';
 import 'package:diplom/blocs/userBestMark/user_best_mark_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
 import 'package:diplom/blocs/userLogs/user_logs_state.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_state.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/diagram_widget.dart';
 import 'package:diplom/widgects/profile.dart';
 import 'package:diplom/widgects/rare_achievements_widget.dart';
@@ -18,21 +20,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../blocs/courseUsers/course_users_bloc.dart';
+import '../../blocs/courseUsers/course_users_state.dart';
 import '../../models/chart_data.dart';
 import '../../models/course.dart';
 import '../../models/test.dart';
 import '../../utils/calculator.dart';
+import '../users_info_widget.dart';
 
 class CoursePage extends StatefulWidget {
   final List<CourseUser> users;
   final List<Test> tests;
   final String courseName;
+  final List<UsersLogsByCourse> usersLogs;
+  final List branches;
 
   const CoursePage(
       {Key? key,
       required this.users,
       required this.tests,
-      required this.courseName})
+      required this.courseName,
+      required this.usersLogs,
+      required this.branches})
       : super(key: key);
 
   @override
@@ -41,7 +50,6 @@ class CoursePage extends StatefulWidget {
 
 class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
   static List<ChartData> _testChartData = <ChartData>[];
-
   @override
   void initState() {
     Calculator calculator = Calculator();
@@ -79,13 +87,25 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
             ],
           ),
           Container(
-            width: double.maxFinite,
-            height: MediaQuery.of(context).size.height - 292,
+            width: double.maxFinite-34,
+            height: MediaQuery.of(context).size.height-88,
             child: TabBarView(
               controller: _tabController,
               children: [
-                Builder(builder: (context) {
-                }),
+                SingleChildScrollView(
+                  child: Builder(
+                      builder: (context) {
+                        return  BlocBuilder<CourseUsersBloc, CourseUsersState>(
+                            builder: (context, courseUsersState) {
+                              if (courseUsersState is CourseUsersLoaded) {
+                                return UsersInfo(branches: widget.branches, courseUsers: courseUsersState.courseUsers, usersLogs: widget.usersLogs);
+                              } else {
+                                return Container();
+                              }
+                            });
+                      }
+                  ),
+                ),
                 SingleChildScrollView(
                   child: Builder(
                       builder: (context) {

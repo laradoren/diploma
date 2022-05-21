@@ -79,6 +79,31 @@ Future<List<UsersLogsByCourse>> fetchUsersLogsByCourseFromTime(users) async {
   return finalUsersLogsList;
 }
 
+Future<List<UserInfo>> fetchUsersByCourse(List <CourseUser> users) async {
+  final List<UserInfo> finalUsersList = [];
+  var allUsers = [];
+  final response = await http.get(Uri.parse(
+      'http://semantic-portal.net/log/api/user'));
+  if (response.statusCode == 200) {
+    final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+    allUsers = parsed.map<UserInfo>((json) => UserInfo.fromMap(json))
+        .toList();
+  } else {
+    throw Exception("Failed to fetch users");
+  }
+  final List usersInCourse = [];
+  users.forEach((user) {
+    usersInCourse.add(user.userId);
+  });
+
+  for (var user in allUsers) {
+    if(usersInCourse.contains(user.id)) {
+      finalUsersList.add(user);
+    }
+  }
+  return finalUsersList;
+}
+
 /// Fetches user logs between selected time by user id
 Future<List<UserLog>> fetchUserLogsBetweenTime(id, time1, time2) async {
   final response = await http.get(Uri.parse(

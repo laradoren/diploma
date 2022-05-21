@@ -74,20 +74,49 @@ class Calculator {
     return averageTimeString.toString();
   }
 
-  int countProgress(userLogs, course) {
+  int countProgress(userLogs, branches, numberOfBranchesChildren) {
+    int courseToCompleteTime = 0;
     int progress = 0;
+    int index = 0;
     double time = 0;
-    final splittedCourse = course.split('-')[0];
+    int numberOfPages = 0;
 
-    for (UserLog userLog in userLogs) {
-      if (userLog.contentId!.contains(course) || userLog.contentId!.contains(splittedCourse)) {
-        time += int.parse(userLog.seconds.toString());
+    for(var pages in numberOfBranchesChildren) {
+      if(pages.length > 0) {
+        numberOfPages += int.parse(pages.length.toString());
       }
+      numberOfPages += 1;
     }
 
-    progress = (time / 30).round();
+    courseToCompleteTime = numberOfPages * 600;
 
-    if(progress > 100) {
+    for (String branch in branches) {
+      double branchTime = 0;
+      List<String> childrenName = [];
+
+      if(numberOfBranchesChildren[index].length > 0) {
+        for(var item in numberOfBranchesChildren[index]) {
+          childrenName.add(item.view);
+        }
+      }
+
+      for (UserLog userLog in userLogs) {
+        if (userLog.contentId!.contains(branch) || childrenName.contains(userLog.contentId)) {
+          branchTime += int.parse(userLog.seconds.toString());
+        }
+      }
+
+      if (branchTime > courseToCompleteTime / branches.length) {
+        branchTime = courseToCompleteTime / branches.length;
+      }
+
+      index++;
+      time += branchTime;
+    }
+
+    progress = (time / (courseToCompleteTime / 100)).round();
+
+    if (progress > 100) {
       progress = 100;
     }
 
@@ -211,9 +240,6 @@ class Calculator {
       }
     }
 
-    if(countProgress(userLogs, course) >= 100) {
-      achievements.add(3);
-    }
 
     return achievements;
   }
@@ -276,8 +302,8 @@ class Calculator {
 
     List courseTestResult = filterUsersTestsByResult(courseTests);
     chartData.add(ChartData('Low', courseTestResult[0]));
-    chartData.add(ChartData('High', courseTestResult[1]));
-    chartData.add(ChartData('Average', courseTestResult[2]));
+    chartData.add(ChartData('Average', courseTestResult[1]));
+    chartData.add(ChartData('High', courseTestResult[2]));
 
     return chartData;
   }

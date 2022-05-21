@@ -7,6 +7,10 @@ import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/utils/calculator.dart';
 import 'package:diplom/widgects/pages/course_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../blocs/courseUsers/course_users_bloc.dart';
+import '../blocs/courseUsers/course_users_event.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -47,6 +51,7 @@ class _CourseWidgetState extends State<CourseWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final courseUsersBloc = BlocProvider.of<CourseUsersBloc>(context);
     return OutlinedButton(
         style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.all(0),
@@ -152,8 +157,11 @@ class _CourseWidgetState extends State<CourseWidget> {
       ],
     ),
     onPressed: () {
+      courseUsersBloc.add(GetCourseUsers(users: widget.course.users));
       Navigator.push( context, MaterialPageRoute(
-        builder: (context) => CoursePage(users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption,),
+        builder: (context) {
+          return CoursePage(branches: widget.course.branches, usersLogs: widget.usersLogs, users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption);
+          }
         )
       );
     }
