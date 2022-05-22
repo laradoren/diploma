@@ -37,7 +37,7 @@ class DiagramWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
             child: Text(header, style:
                   const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color.fromRGBO(93, 92, 99, 1)))),
         Padding(

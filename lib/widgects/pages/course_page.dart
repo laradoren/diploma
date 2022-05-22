@@ -12,6 +12,7 @@ import 'package:diplom/blocs/userLogs/user_logs_state.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_state.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
+import 'package:diplom/widgects/charts_widget.dart';
 import 'package:diplom/widgects/diagram_widget.dart';
 import 'package:diplom/widgects/profile.dart';
 import 'package:diplom/widgects/rare_achievements_widget.dart';
@@ -49,14 +50,6 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
-  static List<ChartData> _testChartData = <ChartData>[];
-  @override
-  void initState() {
-    Calculator calculator = Calculator();
-    _testChartData = calculator.calculateTestsGapsChartData(widget.tests);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     TabController _tabController = TabController(length: 2, vsync: this);
@@ -83,7 +76,7 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
             controller: _tabController,
             tabs: const [
               Tab(text: 'INFO', height: 32),
-              Tab(text: 'DIAGRAMS', height: 32)
+              Tab(text: 'CHARTS', height: 32)
             ],
           ),
           Container(
@@ -109,7 +102,7 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
                 SingleChildScrollView(
                   child: Builder(
                       builder: (context) {
-                        return DiagramWidget(header: "Test results for courses", data: _testChartData, height: widget.tests.length);
+                        return ChartsWidget(usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users);
                       }
                   ),
                 ),

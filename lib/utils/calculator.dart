@@ -2,6 +2,8 @@ import 'package:diplom/models/chart_data.dart';
 import 'package:diplom/models/log.dart';
 import 'package:diplom/models/mark.dart';
 import 'package:diplom/models/test.dart';
+import 'package:diplom/models/user.dart';
+import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:intl/intl.dart';
 
 class Calculator {
@@ -283,16 +285,50 @@ class Calculator {
     int counterForHigh = 0;
 
     for(final test in tests) {
-      if(int.parse(test.percentage) <= 6) {
+      if(int.parse(test.percentage) <= 33) {
         counterForLow++;
       } else {
-        if(int.parse(test.percentage) >= 12) {
+        if(int.parse(test.percentage) >= 66) {
           counterForHigh++;
         } else {
           counterForAverage++;
         }
       }
     }
+
+    return [counterForLow, counterForAverage, counterForHigh];
+  }
+
+  List filterUsersTimesByResult(courseLog) {
+    int counterForTime = 0;
+    List usersTime = [];
+    int counterForLow = 0;
+    int counterForAverage = 0;
+    int counterForHigh = 0;
+
+    for(final log in courseLog) {
+      counterForTime = 0;
+      for(final userLog in log.logs) {
+        counterForTime = int.parse(userLog.seconds) + counterForTime;
+      }
+      print(counterForTime);
+      usersTime.add(counterForTime);
+    }
+
+    for(final time in usersTime) {
+      final convertedTime = time/60;
+      if(convertedTime < 20) {
+        counterForLow++;
+      } else {
+        if(convertedTime > 40) {
+          counterForHigh++;
+        } else {
+          counterForAverage++;
+        }
+      }
+    }
+
+    print([counterForLow, counterForAverage, counterForHigh]);
 
     return [counterForLow, counterForAverage, counterForHigh];
   }
@@ -306,5 +342,27 @@ class Calculator {
     chartData.add(ChartData('High', courseTestResult[2]));
 
     return chartData;
+  }
+
+  List<ChartData> calculateTimeGapsChartData(List <UsersLogsByCourse> logs) {
+    List<ChartData> timeData = <ChartData>[];
+    List courseTestResult = filterUsersTimesByResult(logs);
+    timeData.add(ChartData('0 - 20 m', courseTestResult[0]));
+    timeData.add(ChartData('20 - 40 m', courseTestResult[1]));
+    timeData.add(ChartData('40 - 60 m', courseTestResult[2]));
+
+    return timeData;
+  }
+
+  int calculateHeightOfChart(List <ChartData> chartData) {
+    int? height = 0;
+
+    chartData.map((data) {
+      if(data.y! > height!) {
+        height = data.y?.round();
+      }
+    });
+
+    return height! + 10;
   }
 }
