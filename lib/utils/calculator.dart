@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:diplom/models/chart_data.dart';
 import 'package:diplom/models/log.dart';
 import 'package:diplom/models/mark.dart';
@@ -311,7 +313,6 @@ class Calculator {
       for(final userLog in log.logs) {
         counterForTime = int.parse(userLog.seconds) + counterForTime;
       }
-      print(counterForTime);
       usersTime.add(counterForTime);
     }
 
@@ -327,8 +328,6 @@ class Calculator {
         }
       }
     }
-
-    print([counterForLow, counterForAverage, counterForHigh]);
 
     return [counterForLow, counterForAverage, counterForHigh];
   }
@@ -354,15 +353,59 @@ class Calculator {
     return timeData;
   }
 
-  int calculateHeightOfChart(List <ChartData> chartData) {
-    int? height = 0;
+  List<ChartData> calculateTimeBranchGapsChartData(List <UsersLogsByCourse> logs, List branches) {
+    List<ChartData> timeBranchData = <ChartData>[];
+    double timeOnBranch = 0;
 
-    chartData.map((data) {
-      if(data.y! > height!) {
-        height = data.y?.round();
+    for(final branch in branches) {
+      timeOnBranch = 0;
+      for(final userLog in logs) {
+        final finalUserLog = userLog.logs;
+        for(final log in finalUserLog!) {
+          if(log.contentId!.contains(branch)) {
+            timeOnBranch = timeOnBranch + double.parse(log.seconds);
+          }
+        }
       }
-    });
+      timeBranchData.add(ChartData(branch, timeOnBranch/60));
+    }
 
-    return height! + 10;
+    return timeBranchData;
+  }
+  List<ChartData> calculateTestBranchGapsChartData(List <Test> tests, List branches) {
+    List<ChartData> testsBranchData = <ChartData>[];
+    double allTestsResultsOnBranch = 0;
+    double testsLength = 0;
+
+    for(final branch in branches) {
+      allTestsResultsOnBranch = 0;
+      testsLength = 0;
+      for(final test in tests) {
+
+        if(test.branchId == branch) {
+          allTestsResultsOnBranch = allTestsResultsOnBranch + double.parse(test.percentage);
+          testsLength++;
+        }
+      }
+      testsBranchData.add(ChartData(branch, allTestsResultsOnBranch/testsLength));
+    }
+
+    return testsBranchData;
+  }
+
+  int calculateHeightOfChart(chartData) {
+    int height = 0;
+
+    for(final data in chartData) {
+      if(data.y > height) {
+        height = data.y.round();
+      }
+    }
+
+    return height + 5;
+  }
+
+  List<ChartData> calculateActiveUsers(course, users) {
+    return users.length;
   }
 }

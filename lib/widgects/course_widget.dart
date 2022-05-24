@@ -22,11 +22,12 @@ class CourseWidget extends StatefulWidget {
   final Course course;
   final List<UsersLogsByCourse> usersLogs;
   final List<Test> courseTests;
+  final List<Test> allUsersTest;
 
   const CourseWidget(
       {Key? key,
         required this.course,
-      required this.usersLogs, required this.courseTests})
+      required this.usersLogs, required this.courseTests, required this.allUsersTest})
       : super(key: key);
 
   @override
@@ -160,7 +161,7 @@ class _CourseWidgetState extends State<CourseWidget> {
       courseUsersBloc.add(GetCourseUsers(users: widget.course.users));
       Navigator.push( context, MaterialPageRoute(
         builder: (context) {
-          return CoursePage(branches: widget.course.branches, usersLogs: widget.usersLogs, users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption);
+          return CoursePage(branches: widget.course.branches, usersLogs: widget.usersLogs, users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption, allUsersTest: widget.allUsersTest);
           }
         )
       );

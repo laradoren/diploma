@@ -7,13 +7,9 @@ import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
 import 'package:diplom/blocs/courseUsers/course_users_bloc.dart';
 import 'package:diplom/blocs/logs/logs_bloc.dart';
-import 'package:diplom/blocs/user/user_bloc.dart';
 import 'package:diplom/blocs/userBestMark/user_best_mark_bloc.dart';
-import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
-import 'package:diplom/blocs/userTests/user_tests_bloc.dart';
 import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
 import 'package:diplom/navigation/navigation_cubit.dart';
-import 'package:diplom/widgects/all_courses_widget.dart';
 import 'package:diplom/widgects/logic_page.dart';
 import 'package:diplom/widgects/splash.dart';
 import 'package:diplom/widgects/pages/root_page.dart';
@@ -43,17 +39,8 @@ class App extends StatelessWidget {
               userRepository: userRepository,
             ),
           ),
-          BlocProvider<UserBloc>(
-            create: (_) => UserBloc(),
-          ),
           BlocProvider<LogsBloc>(
             create: (_) => LogsBloc(),
-          ),
-          BlocProvider<UserLogsBloc>(
-            create: (_) => UserLogsBloc(),
-          ),
-          BlocProvider<UserTestsBloc>(
-            create: (_) => UserTestsBloc(),
           ),
           BlocProvider<WeekLogsBloc>(
             create: (_) => WeekLogsBloc(),

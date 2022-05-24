@@ -4,14 +4,13 @@ import 'package:diplom/authentication/authentication.dart';
 import 'package:diplom/authentication/authentication_bloc.dart';
 import 'package:diplom/blocs/allCourses/all_courses_state.dart';
 import 'package:diplom/blocs/allCourses/all_courses_bloc.dart';
-import 'package:diplom/blocs/user/user_bloc.dart';
-import 'package:diplom/blocs/user/user_state.dart';
-import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
-import 'package:diplom/blocs/userLogs/user_logs_state.dart';
+import 'package:diplom/blocs/allUsersLogs/all_users_logs_bloc.dart';
+import 'package:diplom/blocs/allUsersTests/all_users_tests_bloc.dart';
+import 'package:diplom/blocs/users/users_bloc.dart';
 import 'package:diplom/navigation/constants/nav_bar_items.dart';
 import 'package:diplom/navigation/navigation_cubit.dart';
 import 'package:diplom/navigation/navigation_state.dart';
-import 'package:diplom/widgects/diagrams_widjet.dart';
+import 'package:diplom/widgects/statistics_widget.dart';
 import 'package:diplom/widgects/weekly_widget.dart';
 import 'package:diplom/widgects/all_courses_widget.dart';
 import 'package:flutter/material.dart';
@@ -37,21 +36,9 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<UserBloc, UserState>(
+        BlocListener<AllCoursesBloc, AllCoursesState>(
           listener: (context, state) => {
-            if (state is UserError)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message!),
-                  ),
-                )
-              }
-          },
-        ),
-        BlocListener<UserLogsBloc, UserLogsState>(
-          listener: (context, state) => {
-            if (state is UserLogsError)
+            if (state is AllCoursesError)
               {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -89,28 +76,58 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              BlocBuilder<NavigationCubit, NavigationState>(
-                  builder: (context, state) {
-                    if (state.navbarItem == NavbarItem.statistics) {
-                      return Column(
-                        children: [
-                          BlocBuilder<AllCoursesBloc, AllCoursesState>(
-                              builder: (context, state) {
-                                if (state is AllCoursesLoaded) {
-                                  return AllCourses(courses: state.courses);
-                                } else {
-                                  return Container();
-                                }
-                              }),
-                        ],
-                      );
-                    } else if (state.navbarItem == NavbarItem.progress) {
-                      return const DiagramsWidget();
-                    } else if (state.navbarItem == NavbarItem.history) {
-                      return const Weekly();
+              BlocBuilder<AllCoursesBloc, AllCoursesState>(
+                  builder: (context, coursesState) {
+                    if (coursesState is AllCoursesLoaded) {
+                      return  BlocBuilder<NavigationCubit, NavigationState>(
+                          builder: (context, state) {
+                            if (state.navbarItem == NavbarItem.statistics) {
+                              return Column(
+                                  children: [
+                                    AllCourses(courses: coursesState.courses)
+                                  ]
+                              );
+                            } else if (state.navbarItem == NavbarItem.progress) {
+                              return Column(
+                                children: [
+                                  BlocProvider<AllUsersLogsBloc>(
+                                     create: (_) => AllUsersLogsBloc(),
+                                    child: Builder(
+                                      builder: (context) {
+                                      final allUsersLogsBloc =
+                                      BlocProvider.of<AllUsersLogsBloc>(context);
+                                      return BlocProvider<AllUsersTestsBloc>(
+                                        create: (_) => AllUsersTestsBloc(),
+                                        child: Builder(
+                                        builder: (context) {
+                                          final allUsersTestsBloc =
+                                          BlocProvider.of<AllUsersTestsBloc>(context);
+                                          return BlocProvider<UsersBloc>(
+                                              create: (_) => UsersBloc(),
+                                              child: Builder(
+                                                  builder: (context) {
+                                                    final allUsersBloc =
+                                                    BlocProvider.of<UsersBloc>(context);
+                                                    return StatisticsWidget(courses: coursesState.courses, usersLogsBloc: allUsersLogsBloc, usersTestsBloc: allUsersTestsBloc, usersBloc: allUsersBloc);
+                                                  })
+                                          );
+                                        })
+                                      );
+                                    })
+                                  )
+                                ],
+                              );
+                            } else if (state.navbarItem == NavbarItem.history) {
+                              return const Weekly();
+                            }
+                            return Container();
+                          });
+                    } else {
+                      return Container();
                     }
-                    return Container();
-                  }),
+                  }
+              ),
+
             ],
           ),
         ),

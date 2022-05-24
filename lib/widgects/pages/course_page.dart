@@ -1,37 +1,19 @@
 import 'dart:ui';
 
-import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
-import 'package:diplom/blocs/courseTests/course_tests_state.dart';
-import 'package:diplom/blocs/courseUsers/course_users_event.dart';
-import 'package:diplom/blocs/user/user_bloc.dart';
-import 'package:diplom/blocs/user/user_state.dart';
-import 'package:diplom/blocs/userBestMark/user_best_mark_bloc.dart';
-import 'package:diplom/blocs/userBestMark/user_best_mark_state.dart';
-import 'package:diplom/blocs/userLogs/user_logs_bloc.dart';
-import 'package:diplom/blocs/userLogs/user_logs_state.dart';
-import 'package:diplom/blocs/weekLogs/week_logs_bloc.dart';
-import 'package:diplom/blocs/weekLogs/week_logs_state.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
+import 'package:diplom/models/course.dart';
+import 'package:diplom/models/test.dart';
+import 'package:diplom/blocs/courseUsers/course_users_bloc.dart';
+import 'package:diplom/blocs/courseUsers/course_users_state.dart';
 import 'package:diplom/widgects/charts_widget.dart';
-import 'package:diplom/widgects/diagram_widget.dart';
-import 'package:diplom/widgects/profile.dart';
-import 'package:diplom/widgects/rare_achievements_widget.dart';
-import 'package:diplom/widgects/statistic_widjet.dart';
+import 'package:diplom/widgects/users_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../blocs/courseUsers/course_users_bloc.dart';
-import '../../blocs/courseUsers/course_users_state.dart';
-import '../../models/chart_data.dart';
-import '../../models/course.dart';
-import '../../models/test.dart';
-import '../../utils/calculator.dart';
-import '../users_info_widget.dart';
 
 class CoursePage extends StatefulWidget {
   final List<CourseUser> users;
   final List<Test> tests;
+  final List<Test> allUsersTest;
   final String courseName;
   final List<UsersLogsByCourse> usersLogs;
   final List branches;
@@ -40,6 +22,7 @@ class CoursePage extends StatefulWidget {
       {Key? key,
       required this.users,
       required this.tests,
+      required this.allUsersTest,
       required this.courseName,
       required this.usersLogs,
       required this.branches})
@@ -102,7 +85,7 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
                 SingleChildScrollView(
                   child: Builder(
                       builder: (context) {
-                        return ChartsWidget(usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users);
+                        return ChartsWidget(branches: widget.branches, usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users, allUsersTest: widget.allUsersTest);
                       }
                   ),
                 ),

@@ -10,12 +10,12 @@ import 'package:http/http.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class DiagramWidget extends StatelessWidget {
+class GraphicWidget extends StatelessWidget {
   final String header;
   final List<ChartData> data;
   final int height;
 
-  const DiagramWidget(
+  const GraphicWidget(
       {Key? key,
         required this.header,
         required this.data,
@@ -43,21 +43,15 @@ class DiagramWidget extends StatelessWidget {
         Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             child: SfCartesianChart(
-                isTransposed: true,
                 primaryXAxis: CategoryAxis(),
-                primaryYAxis: CategoryAxis(
-                  minimum: 0,
-                  maximum: double.parse(height.toString()),
-                  interval: height/5,
-                ),
-                series: <ChartSeries>[
-                  BarSeries<ChartData, String>(
-                      color: const Color.fromRGBO(56, 179, 158, 1),
-                      width: 0.25,
-                      spacing: 0.1,
-                      dataSource: data,
-                      xValueMapper: (ChartData data, _) => data.x,
-                      yValueMapper: (ChartData data, _) => data.y)
+                series: <CartesianSeries>[
+                  SplineSeries<ChartData, String>(
+                    width: 3,
+                    color: const Color.fromRGBO(56, 179, 158, 1),
+                    dataSource: data,
+                    xValueMapper: (ChartData data, _) => data.x,
+                    yValueMapper: (ChartData data, _) => data.y,
+                  )
                 ])),
       ],
     );

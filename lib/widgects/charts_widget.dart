@@ -19,9 +19,11 @@ import 'weekly_text_row_widget.dart';
 class ChartsWidget extends StatefulWidget {
   final List<CourseUser> users;
   final List<Test> tests;
+  final List<Test> allUsersTest;
   final List<UsersLogsByCourse> usersLogs;
+  final List branches;
 
-  const ChartsWidget({Key? key, required this.users, required this.tests, required this.usersLogs}) : super(key: key);
+  const ChartsWidget({Key? key, required this.users, required this.tests, required this.allUsersTest, required this.usersLogs, required this.branches}) : super(key: key);
 
   @override
   State<ChartsWidget> createState() => _ChartsWidgetState();
@@ -30,13 +32,23 @@ class ChartsWidget extends StatefulWidget {
 class _ChartsWidgetState extends State<ChartsWidget> with TickerProviderStateMixin {
   static List<ChartData> _testChartData = <ChartData>[];
   static List<ChartData> _timeChartData = <ChartData>[];
-  static int _height = 0;
+  static List<ChartData> _timeBranchChartData = <ChartData>[];
+  static List<ChartData> _testBranchChartData = <ChartData>[];
+  static int _heightTests = 0;
+  static int _heightTime = 0;
+  static int _heightTimeBranch = 0;
+  static int _heightTestBranch = 0;
   @override
   void initState() {
     Calculator calculator = Calculator();
     _testChartData = calculator.calculateTestsGapsChartData(widget.tests);
     _timeChartData = calculator.calculateTimeGapsChartData(widget.usersLogs);
-    _height = calculator.calculateHeightOfChart(_testChartData);
+    _timeBranchChartData = calculator.calculateTimeBranchGapsChartData(widget.usersLogs, widget.branches);
+    _testBranchChartData = calculator.calculateTestBranchGapsChartData(widget.allUsersTest, widget.branches);
+    _heightTests = calculator.calculateHeightOfChart(_testChartData);
+    _heightTime = calculator.calculateHeightOfChart(_timeChartData);
+    _heightTimeBranch = calculator.calculateHeightOfChart(_timeBranchChartData);
+    _heightTestBranch = calculator.calculateHeightOfChart(_testBranchChartData);
     super.initState();
   }
 
@@ -63,8 +75,10 @@ class _ChartsWidgetState extends State<ChartsWidget> with TickerProviderStateMix
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Column(
                 children: [
-                  DiagramWidget(header: "Test results for courses", data: _testChartData, height: _height),
-                  DiagramWidget(header: "Spended time on course", data: _timeChartData, height: _height)
+                  DiagramWidget(header: "Test results for courses", data: _testChartData, height: _heightTests),
+                  DiagramWidget(header: "Time spent on course", data: _timeChartData, height: _heightTime),
+                  //DiagramWidget(header: "Average tests results on separate branch", data: _testBranchChartData, height: _heightTestBranch),
+                  DiagramWidget(header: "Time spend on separate branch", data: _timeBranchChartData, height: _heightTimeBranch)
                 ]
               ),
             ),

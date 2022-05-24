@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:diplom/blocs/allUsersTests/all_users_tests_bloc.dart';
+import 'package:diplom/blocs/allUsersTests/all_users_tests_event.dart';
+import 'package:diplom/blocs/allUsersTests/all_users_tests_state.dart';
 import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/course/course_event.dart';
 import 'package:diplom/blocs/course/course_state.dart';
@@ -26,19 +29,22 @@ class TeacherCourseWidget extends StatelessWidget {
   final CourseBloc courseBloc;
   final UsersLogsByCoursesBloc usersLogsBloc;
   final CourseTestsBloc courseTestsBloc;
+  final AllUsersTestsBloc allUsersTestsBloc;
 
   const TeacherCourseWidget(
       {Key? key,
       required this.course,
       required this.courseBloc,
         required this.usersLogsBloc,
-      required this.courseTestsBloc})
+      required this.courseTestsBloc,
+      required this.allUsersTestsBloc})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     courseBloc.add(GetCourse(course: course));
     courseTestsBloc.add(GetCourseTests(course: course));
+    allUsersTestsBloc.add(const GetAllUsersTests());
     return Column(
         children: [
           BlocBuilder<CourseBloc, CourseState>(
@@ -51,9 +57,17 @@ class TeacherCourseWidget extends StatelessWidget {
                       return BlocBuilder<CourseTestsBloc , CourseTestsState>(
                       builder: (context, courseTestsState) {
                         if (courseTestsState is CourseTestsLoaded) {
-                          return CourseWidget(course: courseState.course, usersLogs:
-                          usersLogsByCourseState.usersLogs,
-                          courseTests: courseTestsState.courseTests);
+                          return BlocBuilder<AllUsersTestsBloc , AllUsersTestsState>(
+                              builder: (context, allUsersTestsState) {
+                                if (allUsersTestsState is AllUsersTestsLoaded) {
+                                  return CourseWidget(course: courseState.course, usersLogs:
+                                      usersLogsByCourseState.usersLogs,
+                                      courseTests: courseTestsState.courseTests,
+                                      allUsersTest: allUsersTestsState.userTests);
+                                } else {
+                                  return Container();
+                                }
+                              });
                         } else {
                           return Container();
                         }

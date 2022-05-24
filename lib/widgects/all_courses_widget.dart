@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:ui';
+import 'package:diplom/blocs/allUsersTests/all_users_tests_bloc.dart';
 import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
 import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_bloc.dart';
@@ -8,9 +9,6 @@ import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/teacher_course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../blocs/userLogs/user_logs_bloc.dart';
-import '../blocs/userLogs/user_logs_state.dart';
 
 class AllCourses extends StatelessWidget {
   final List<ShortCourse> courses;
@@ -72,11 +70,20 @@ class AllCourses extends StatelessWidget {
                                       builder: (context) {
                                         final courseTestsBloc =
                                         BlocProvider.of<CourseTestsBloc>(context);
-                                        return TeacherCourseWidget(
-                                            course: course.course,
-                                            courseBloc: courseBloc,
-                                            usersLogsBloc: usersLogsBloc,
-                                          courseTestsBloc: courseTestsBloc,
+                                        return BlocProvider<AllUsersTestsBloc>(
+                                            create: (_) => AllUsersTestsBloc(),
+                                            child: Builder(
+                                                builder: (context) {
+                                                  final allUsersTestsBloc =
+                                                  BlocProvider.of<AllUsersTestsBloc>(context);
+                                                  return TeacherCourseWidget(
+                                                    course: course.course,
+                                                    courseBloc: courseBloc,
+                                                    usersLogsBloc: usersLogsBloc,
+                                                    courseTestsBloc: courseTestsBloc,
+                                                    allUsersTestsBloc: allUsersTestsBloc,
+                                                  );
+                                                })
                                         );
                                       })
                               );
