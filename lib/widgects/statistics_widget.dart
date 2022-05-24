@@ -34,6 +34,8 @@ class StatisticsWidget extends StatelessWidget {
     usersLogsBloc.add(const GetAllUsersLogs());
     usersTestsBloc.add(const GetAllUsersTests());
     usersBloc.add(const GetUsers());
+    final allCoursesDetail =
+    BlocProvider.of<AllUsersTestsBloc>(context);
     return Column(
       children: [
         BlocBuilder<AllUsersLogsBloc, AllUsersLogsState>(

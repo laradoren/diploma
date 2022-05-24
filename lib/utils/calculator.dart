@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:diplom/models/chart_data.dart';
+import 'package:diplom/models/course.dart';
 import 'package:diplom/models/log.dart';
 import 'package:diplom/models/mark.dart';
 import 'package:diplom/models/test.dart';
@@ -405,7 +406,60 @@ class Calculator {
     return height + 5;
   }
 
-  List<ChartData> calculateActiveUsers(course, users) {
-    return users.length;
+  double calculateActiveUsers(course, users) {
+    double activeUsersCount = 0;
+    List courseUsersId = [];
+    for(final user in course.users) {
+      if(user.active == "1") {
+        courseUsersId.add(user.userId);
+      }
+    }
+    for(final user in users) {
+      if(courseUsersId.contains(user.id)) {
+        activeUsersCount++;
+      }
+    }
+    return activeUsersCount;
+  }
+
+  double calculateAllSpentTimeOnCourse(course, usersLogs) {
+    double timeOnBranch = 0;
+
+    for(final userLog in usersLogs) {
+        if (userLog.contentId != null && userLog.contentId!.contains(course)) {
+          timeOnBranch = timeOnBranch + double.parse(userLog.seconds);
+        }
+      }
+
+    return timeOnBranch/3600;
+  }
+
+  List<ChartData> calculateStatisticsInBranches(List<String> branches, List<UserLog> usersLogs) {
+    List<ChartData> statisticsBranches = [];
+    ChartData mostPopBranch = ChartData("initial", 0);
+    ChartData lessPopBranch = ChartData("initial", 100000);
+    double timeOnBranch;
+    double countOfLog;
+    for(final branch in branches) {
+      timeOnBranch  = 0;
+      countOfLog  = 0;
+      for(final log in usersLogs) {
+        if (log.contentId != null && log.contentId!.contains(branch)) {
+          timeOnBranch = timeOnBranch + double.parse(log.seconds);
+          countOfLog++;
+        }
+      }
+      if(timeOnBranch > double.parse(mostPopBranch.y.toString())) {
+        mostPopBranch = ChartData(branch, timeOnBranch/countOfLog);
+      }
+      if(timeOnBranch < double.parse(lessPopBranch.y.toString())) {
+        lessPopBranch = ChartData(branch, timeOnBranch/countOfLog);
+      }
+    }
+
+    statisticsBranches.add(mostPopBranch);
+    statisticsBranches.add(lessPopBranch);
+
+    return statisticsBranches;
   }
 }

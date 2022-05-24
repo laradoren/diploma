@@ -84,7 +84,7 @@ class _TeacherCabinetPageState extends State<TeacherCabinetPage> {
                             if (state.navbarItem == NavbarItem.statistics) {
                               return Column(
                                   children: [
-                                    AllCourses(courses: coursesState.courses)
+                                    Container()
                                   ]
                               );
                             } else if (state.navbarItem == NavbarItem.progress) {
