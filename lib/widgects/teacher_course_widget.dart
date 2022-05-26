@@ -13,6 +13,9 @@ import 'package:diplom/blocs/courseTests/course_tests_event.dart';
 import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_bloc.dart';
 import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_event.dart';
 import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_state.dart';
+import 'package:diplom/models/log.dart';
+import 'package:diplom/models/test.dart';
+import 'package:diplom/models/user.dart';
 import 'package:diplom/widgects/course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,55 +30,28 @@ extension StringExtension on String {
 class TeacherCourseWidget extends StatelessWidget {
   final String course;
   final CourseBloc courseBloc;
-  final UsersLogsByCoursesBloc usersLogsBloc;
-  final CourseTestsBloc courseTestsBloc;
-  final AllUsersTestsBloc allUsersTestsBloc;
+  final List<UserLog> usersLogs;
+  final List<Test> tests;
+  final List<UserInfo> users;
 
   const TeacherCourseWidget(
       {Key? key,
       required this.course,
       required this.courseBloc,
-        required this.usersLogsBloc,
-      required this.courseTestsBloc,
-      required this.allUsersTestsBloc})
+        required this.usersLogs,
+        required this.tests,
+      required this.users})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     courseBloc.add(GetCourse(course: course));
-    courseTestsBloc.add(GetCourseTests(course: course));
-    allUsersTestsBloc.add(const GetAllUsersTests());
     return Column(
         children: [
           BlocBuilder<CourseBloc, CourseState>(
               builder: (context, courseState) {
                 if (courseState is CourseLoaded) {
-                  usersLogsBloc.add(GetUsersLogsByCoursesFromTime(users: courseState.course.users));
-                  return BlocBuilder<UsersLogsByCoursesBloc, UsersLogsByCoursesState>(
-                    builder: (context, usersLogsByCourseState) {
-                    if (usersLogsByCourseState is UsersLogsByCoursesLoaded) {
-                      return BlocBuilder<CourseTestsBloc , CourseTestsState>(
-                      builder: (context, courseTestsState) {
-                        if (courseTestsState is CourseTestsLoaded) {
-                          return BlocBuilder<AllUsersTestsBloc , AllUsersTestsState>(
-                              builder: (context, allUsersTestsState) {
-                                if (allUsersTestsState is AllUsersTestsLoaded) {
-                                  return CourseWidget(course: courseState.course, usersLogs:
-                                      usersLogsByCourseState.usersLogs,
-                                      courseTests: courseTestsState.courseTests,
-                                      allUsersTest: allUsersTestsState.userTests);
-                                } else {
-                                  return Container();
-                                }
-                              });
-                        } else {
-                          return Container();
-                        }
-                      });
-                    } else {
-                      return _buildLoading();
-                    }
-                    });
+                  return CourseWidget(course: courseState.course, usersLogs: usersLogs, tests: tests, users: users);
                 } else {
                   return Container();
                 }

@@ -11,11 +11,13 @@ import '../models/data.dart';
 class StatisticsInfoRow extends StatefulWidget {
   final String header;
   final List<Data> data;
+  final String? param;
 
   const StatisticsInfoRow({
     Key? key,
     required this.header,
-    required this.data
+    required this.data,
+    required this.param
   }) : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class _StatisticsInfoRowState extends State<StatisticsInfoRow> with TickerProvid
                   text: TextSpan(
                     style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: Color.fromRGBO(93, 92, 99, 1)),
                     children: [
-                      TextSpan(text: '${info.key}: ${info.value.round()} s'),
+                      TextSpan(text: '${info.key}: ${double.parse(info.value.toString()).round()}'),
                     ],
                   ),
                 ),

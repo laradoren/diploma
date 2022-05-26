@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:diplom/models/course.dart';
+import 'package:diplom/models/log.dart';
 import 'package:diplom/models/test.dart';
+import 'package:diplom/models/user.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/utils/calculator.dart';
 import 'package:diplom/widgects/pages/course_page.dart';
@@ -20,14 +22,14 @@ extension StringExtension on String {
 
 class CourseWidget extends StatefulWidget {
   final Course course;
-  final List<UsersLogsByCourse> usersLogs;
-  final List<Test> courseTests;
-  final List<Test> allUsersTest;
+  final List<UserLog> usersLogs;
+  final List<Test> tests;
+  final List<UserInfo> users;
 
   const CourseWidget(
       {Key? key,
         required this.course,
-      required this.usersLogs, required this.courseTests, required this.allUsersTest})
+      required this.usersLogs, required this.tests, required this.users})
       : super(key: key);
 
   @override
@@ -44,8 +46,8 @@ class _CourseWidgetState extends State<CourseWidget> {
     final Calculator calculator = Calculator();
     setState(() {
       _allUsers = calculator.countActiveUsers(widget.course.users);
-      _averageTestResult = calculator.calculateAverageTestResult(widget.course.users, widget.courseTests);
-      _averageUserTime = calculator.calculateAverageSpendTime(widget.usersLogs, widget.course.branches);
+      _averageTestResult = calculator.calculateAverageTestResult(widget.course.users, widget.tests, widget.course);
+      _averageUserTime = calculator.calculateAverageSpendTime(widget.usersLogs, widget.course);
     });
     super.initState();
   }
@@ -146,7 +148,7 @@ class _CourseWidgetState extends State<CourseWidget> {
                                 'assets/images/alarm_clock_icon.png', height: 20, width: 20),
                           ),
                         ),
-                        TextSpan(text: '$_averageUserTime'),
+                        TextSpan(text: _averageUserTime),
                       ],
                     ),
                   ),
@@ -158,10 +160,9 @@ class _CourseWidgetState extends State<CourseWidget> {
       ],
     ),
     onPressed: () {
-      courseUsersBloc.add(GetCourseUsers(users: widget.course.users));
       Navigator.push( context, MaterialPageRoute(
         builder: (context) {
-          return CoursePage(branches: widget.course.branches, usersLogs: widget.usersLogs, users: widget.course.users, tests: widget.courseTests, courseName: widget.course.course.caption, allUsersTest: widget.allUsersTest);
+          return CoursePage(course: widget.course, usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users);
           }
         )
       );

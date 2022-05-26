@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:diplom/api/branch.dart';
 import 'package:diplom/blocs/courseUsers/course_users_bloc.dart';
+import 'package:diplom/models/log.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/user_info_row_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,19 +15,23 @@ import '../utils/calculator.dart';
 import 'weekly_text_row_widget.dart';
 
 class UsersInfo extends StatefulWidget {
-  final List<UserInfo> courseUsers;
-  final List<UsersLogsByCourse> usersLogs;
-  final List branches;
+  final List<UserInfo> users;
+  final List<UserLog> usersLogs;
+  final Course course;
 
-  const UsersInfo({Key? key, required this.courseUsers, required this.usersLogs, required this.branches}) : super(key: key);
+  const UsersInfo({Key? key, required this.users, required this.usersLogs, required this.course}) : super(key: key);
 
   @override
   State<UsersInfo> createState() => _UsersInfoState();
 
 }
 class _UsersInfoState extends State<UsersInfo> with TickerProviderStateMixin {
+  List<UserInfo> _courseUsers = <UserInfo>[];
+
   @override
   void initState() {
+    final Calculator calculator = Calculator();
+    _courseUsers = calculator.getCourseUsers(widget.users, widget.course);
     super.initState();
   }
 
@@ -53,13 +58,13 @@ class _UsersInfoState extends State<UsersInfo> with TickerProviderStateMixin {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
               child: Column(
                 children: [
-                  for(var user in widget.courseUsers) ...[
+                  for(UserInfo user in _courseUsers) ...[
                       UserInfoRow(
                         name: user.name,
                         surname: user.surname,
                         userId: user.id,
                         usersLogs: widget.usersLogs,
-                          branches: widget.branches,
+                        branches: widget.course.branches,
                       )
                   ]
                 ]

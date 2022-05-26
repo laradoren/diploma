@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:diplom/api/branch.dart';
 import 'package:diplom/blocs/courseUsers/course_users_bloc.dart';
 import 'package:diplom/models/chart_data.dart';
+import 'package:diplom/models/log.dart';
 import 'package:diplom/models/test.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/diagram_widget.dart';
@@ -17,13 +18,12 @@ import '../utils/calculator.dart';
 import 'weekly_text_row_widget.dart';
 
 class ChartsWidget extends StatefulWidget {
-  final List<CourseUser> users;
+  final List<UserInfo> users;
   final List<Test> tests;
-  final List<Test> allUsersTest;
-  final List<UsersLogsByCourse> usersLogs;
+  final List<UserLog> usersLogs;
   final List branches;
 
-  const ChartsWidget({Key? key, required this.users, required this.tests, required this.allUsersTest, required this.usersLogs, required this.branches}) : super(key: key);
+  const ChartsWidget({Key? key, required this.users, required this.tests,required this.usersLogs, required this.branches}) : super(key: key);
 
   @override
   State<ChartsWidget> createState() => _ChartsWidgetState();
@@ -44,7 +44,7 @@ class _ChartsWidgetState extends State<ChartsWidget> with TickerProviderStateMix
     _testChartData = calculator.calculateTestsGapsChartData(widget.tests);
     _timeChartData = calculator.calculateTimeGapsChartData(widget.usersLogs);
     _timeBranchChartData = calculator.calculateTimeBranchGapsChartData(widget.usersLogs, widget.branches);
-    _testBranchChartData = calculator.calculateTestBranchGapsChartData(widget.allUsersTest, widget.branches);
+    _testBranchChartData = calculator.calculateTestBranchGapsChartData(widget.tests, widget.branches);
     _heightTests = calculator.calculateHeightOfChart(_testChartData);
     _heightTime = calculator.calculateHeightOfChart(_timeChartData);
     _heightTimeBranch = calculator.calculateHeightOfChart(_timeBranchChartData);

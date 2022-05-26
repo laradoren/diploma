@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:diplom/api/branch.dart';
+import 'package:diplom/models/log.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/utils/calculator.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class UserInfoRow extends StatefulWidget {
   final String name;
   final String surname;
   final String userId;
-  final List<UsersLogsByCourse> usersLogs;
+  final List<UserLog> usersLogs;
   final List branches;
 
   const UserInfoRow({
@@ -31,6 +32,7 @@ class _UserInfoRowState extends State<UserInfoRow> with TickerProviderStateMixin
 
   void initPageState() async {
     List<String> pagesNames = [];
+    List<UserLog> userLogById = [];
     List<List<dynamic>> numberOfBranchesChildren = [];
     final Calculator calculator = Calculator();
 
@@ -42,13 +44,13 @@ class _UserInfoRowState extends State<UserInfoRow> with TickerProviderStateMixin
     }
 
 
-
     setState(() {
       for(final userLog in widget.usersLogs) {
         if(userLog.userId == widget.userId) {
-          _progress = calculator.countProgress(userLog.logs, widget.branches, numberOfBranchesChildren);
+          userLogById.add(userLog);
         }
       }
+      _progress = calculator.countProgress(userLogById, widget.branches, numberOfBranchesChildren);
     });
   }
 

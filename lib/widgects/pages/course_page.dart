@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:diplom/models/log.dart';
+import 'package:diplom/models/user.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/models/course.dart';
 import 'package:diplom/models/test.dart';
@@ -11,21 +13,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoursePage extends StatefulWidget {
-  final List<CourseUser> users;
+  final Course course;
+  final List<UserLog> usersLogs;
   final List<Test> tests;
-  final List<Test> allUsersTest;
-  final String courseName;
-  final List<UsersLogsByCourse> usersLogs;
-  final List branches;
+  final List<UserInfo> users;
 
   const CoursePage(
       {Key? key,
-      required this.users,
-      required this.tests,
-      required this.allUsersTest,
-      required this.courseName,
+      required this.course,
       required this.usersLogs,
-      required this.branches})
+      required this.tests,
+      required this.users})
       : super(key: key);
 
   @override
@@ -41,7 +39,7 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(80, 71, 153, 1),
         toolbarHeight: 54,
-        title: Text(widget.courseName,
+        title: Text(widget.course.course.caption,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
       ),
       backgroundColor: Colors.white,
@@ -71,21 +69,14 @@ class _CoursePageState extends State<CoursePage> with TickerProviderStateMixin {
                 SingleChildScrollView(
                   child: Builder(
                       builder: (context) {
-                        return  BlocBuilder<CourseUsersBloc, CourseUsersState>(
-                            builder: (context, courseUsersState) {
-                              if (courseUsersState is CourseUsersLoaded) {
-                                return UsersInfo(branches: widget.branches, courseUsers: courseUsersState.courseUsers, usersLogs: widget.usersLogs);
-                              } else {
-                                return Container();
-                              }
-                            });
+                        return UsersInfo(course: widget.course, users: widget.users, usersLogs: widget.usersLogs);
                       }
                   ),
                 ),
                 SingleChildScrollView(
                   child: Builder(
                       builder: (context) {
-                        return ChartsWidget(branches: widget.branches, usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users, allUsersTest: widget.allUsersTest);
+                        return ChartsWidget(branches: widget.course.branches, usersLogs: widget.usersLogs, tests: widget.tests, users: widget.users);
                       }
                   ),
                 ),

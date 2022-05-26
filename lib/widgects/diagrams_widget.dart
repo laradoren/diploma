@@ -16,7 +16,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class DiagramsWidget extends StatefulWidget {
-  final List<ShortCourse> courses;
+  final List<Course> courses;
   final List<UserLog> usersLogs;
   final List<Test> tests;
   final List<UserInfo> users;
@@ -35,53 +35,36 @@ class DiagramsWidget extends StatefulWidget {
 }
 
 class _DiagramsWidgetState extends State<DiagramsWidget> {
-  static final List<ChartData> _countOfActiveUsers = <ChartData>[];
+  static final List<Data> _countOfActiveUsers = <Data>[];
   static final List<ChartData> _countOfAllSpentTime = <ChartData>[];
   static final List<ChartData> _mostPopularBranches = <ChartData>[];
   static final List<Data> _lessPopularBranches = <Data>[];
   static final List<ChartData> _usersTestsGaps = <ChartData>[];
-  static int _heightOfActiveUsers = 100;
+  static List<Data> _bestUsersTestsResults = <Data>[];
   static int _heightOfAllSpentTime = 100;
   static int _heightOfMostPopBranch = 100;
-
-  void initPageState() async {
-    List<ChartData> _countUsers = <ChartData>[];
-    List<ChartData> _countAllTime = <ChartData>[];
-    List<ChartData> _mostPopularBranch = <ChartData>[];
-    List<ChartData> _lessPopularBranch = <ChartData>[];
-    List<ChartData> _statisticsBranches;
-    double _activeUsers;
-    double _allTime;
-    final Calculator calculator = Calculator();
-
-    for(ShortCourse course in widget.courses) {
-      final resultCourse = await fetchCoursesByName(course.course);
-      _activeUsers = calculator.calculateActiveUsers(resultCourse, widget.users);
-      _countUsers.add(ChartData(course.caption, _activeUsers));
-      _allTime = calculator.calculateAllSpentTimeOnCourse(course.course, widget.usersLogs);
-      _countAllTime.add(ChartData(course.caption, _allTime));
-      _statisticsBranches = calculator.calculateStatisticsInBranches(resultCourse.branches, widget.usersLogs);
-      _mostPopularBranch.add(_statisticsBranches[0]);
-      _lessPopularBranch.add(_statisticsBranches[1]);
-    }
-
-    setState(() {
-      for(var i = 0; i < widget.courses.length; i++) {
-        _countOfActiveUsers.add(_countUsers[i]);
-        _countOfAllSpentTime.add(_countAllTime[i]);
-        _mostPopularBranches.add(_mostPopularBranch[i]);
-        _lessPopularBranches.add(Data(key: _lessPopularBranch[i].x, value: _lessPopularBranch[i].y));
-      }
-      _heightOfActiveUsers = calculator.calculateHeightOfChart(_countOfActiveUsers);
-      _heightOfAllSpentTime = calculator.calculateHeightOfChart(_countOfAllSpentTime);
-      _heightOfMostPopBranch = calculator.calculateHeightOfChart(_mostPopularBranches);
-    });
-  }
-
+  static int _heightOfUsersTestsGaps = 100;
 
   @override
   void initState() {
-    initPageState();
+    final Calculator calculator = Calculator();
+    List<ChartData> _statisticsBranches =  <ChartData>[];
+    for(Course course in widget.courses) {
+      if(_countOfActiveUsers.length < widget.courses.length) {
+        _countOfActiveUsers.add(Data(key: course.course.caption, value: calculator.calculateActiveUsers(course, widget.users)));
+      }
+      _countOfAllSpentTime.add(ChartData(course.course.caption, calculator.calculateAllSpentTimeOnCourse(course.course.course, widget.usersLogs)));
+      _statisticsBranches = calculator.calculateStatisticsInBranches(course.branches, widget.usersLogs);
+      _mostPopularBranches.add(_statisticsBranches[0]);
+      if(_lessPopularBranches.length < widget.courses.length) {
+        _lessPopularBranches.add(Data(key: _statisticsBranches[1].x, value: _statisticsBranches[1].y));
+      }
+    }
+    _usersTestsGaps.addAll(calculator.calculateTestsGapsChartData(widget.tests));
+    _heightOfUsersTestsGaps = calculator.calculateHeightOfChart(_usersTestsGaps);
+    _heightOfAllSpentTime = calculator.calculateHeightOfChart(_countOfAllSpentTime);
+    _heightOfMostPopBranch = calculator.calculateHeightOfChart(_mostPopularBranches);
+    _bestUsersTestsResults = calculator.calculateTestsStatistics(widget.tests, widget.users);
     super.initState();
   }
 
@@ -95,13 +78,20 @@ class _DiagramsWidgetState extends State<DiagramsWidget> {
           thickness: 10,
           color: Color.fromRGBO(218, 220, 239, 1),
         ),
-        DiagramWidget(header: "Active students in courses", data: _countOfActiveUsers, height: _heightOfActiveUsers),
+        const Padding(
+            padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
+            child: Text("Statistics by all courses",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color.fromRGBO(93, 92, 99, 1)))),
+        StatisticsInfoRow(header: "Active students in courses", data: _countOfActiveUsers, param: "students",),
+        StatisticsInfoRow(header: "Less popular branches for users", data: _lessPopularBranches, param: "seconds"),
+        StatisticsInfoRow(header: "The best user tests results", data: _bestUsersTestsResults, param: "%"),
+        //DiagramWidget(header: "Active students in courses", data: _countOfActiveUsers, height: _heightOfActiveUsers),
         DiagramWidget(header: "All spent hours on courses", data: _countOfAllSpentTime, height: _heightOfAllSpentTime),
         DiagramWidget(header: "Most popular branches for users", data: _mostPopularBranches, height: _heightOfMostPopBranch),
-        StatisticsInfoRow(header: "Less popular branches for users", data: _lessPopularBranches),
-        DiagramWidget(header: "Gaps of users test results for all tests", data: _usersTestsGaps, height: 100),
-        StatisticsInfoRow(header: "The best user results in course branches for users", data: _lessPopularBranches),
-        StatisticsInfoRow(header: "The less user results in course branches for users", data: _lessPopularBranches),
+        DiagramWidget(header: "Gaps of users test results for all tests", data: _usersTestsGaps, height: _heightOfUsersTestsGaps),
       ],
     );
   }

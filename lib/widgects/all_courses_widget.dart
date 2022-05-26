@@ -5,15 +5,25 @@ import 'package:diplom/blocs/course/course_bloc.dart';
 import 'package:diplom/blocs/courseTests/course_tests_bloc.dart';
 import 'package:diplom/blocs/usersLogsByCourse/users_logs_by_course_bloc.dart';
 import 'package:diplom/models/course.dart';
+import 'package:diplom/models/log.dart';
+import 'package:diplom/models/test.dart';
+import 'package:diplom/models/user.dart';
 import 'package:diplom/models/users_logs_by_course.dart';
 import 'package:diplom/widgects/teacher_course_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AllCourses extends StatelessWidget {
-  final List<ShortCourse> courses;
+  final List<Course> courses;
+  final List<UserLog> usersLogs;
+  final List<Test> tests;
+  final List<UserInfo> users;
 
-  const AllCourses({Key? key, required this.courses})
+  const AllCourses({Key? key,
+    required this.courses,
+    required this.usersLogs,
+    required this.tests,
+    required this.users})
       : super(key: key);
 
   @override
@@ -58,37 +68,14 @@ class AllCourses extends StatelessWidget {
                         builder: (context) {
                           final courseBloc =
                           BlocProvider.of<CourseBloc>(context);
-                          return BlocProvider<UsersLogsByCoursesBloc>(
-                            create: (_) => UsersLogsByCoursesBloc(),
-                            child: Builder(
-                            builder: (context) {
-                              final usersLogsBloc =
-                              BlocProvider.of<UsersLogsByCoursesBloc>(context);
-                              return BlocProvider<CourseTestsBloc>(
-                                  create: (_) => CourseTestsBloc(),
-                                  child: Builder(
-                                      builder: (context) {
-                                        final courseTestsBloc =
-                                        BlocProvider.of<CourseTestsBloc>(context);
-                                        return BlocProvider<AllUsersTestsBloc>(
-                                            create: (_) => AllUsersTestsBloc(),
-                                            child: Builder(
-                                                builder: (context) {
-                                                  final allUsersTestsBloc =
-                                                  BlocProvider.of<AllUsersTestsBloc>(context);
-                                                  return TeacherCourseWidget(
-                                                    course: course.course,
-                                                    courseBloc: courseBloc,
-                                                    usersLogsBloc: usersLogsBloc,
-                                                    courseTestsBloc: courseTestsBloc,
-                                                    allUsersTestsBloc: allUsersTestsBloc,
-                                                  );
-                                                })
-                                        );
-                                      })
-                              );
-                            })
-                            );
+                          return TeacherCourseWidget(
+                              course: course.course.course,
+                              courseBloc: courseBloc,
+                              usersLogs: usersLogs,
+                              tests: tests,
+                              users: users
+
+                          );
                           }
                         ),
                       ),

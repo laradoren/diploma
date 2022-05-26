@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:diplom/models/chart_data.dart';
 import 'package:diplom/models/course.dart';
+import 'package:diplom/models/data.dart';
 import 'package:diplom/models/log.dart';
 import 'package:diplom/models/mark.dart';
 import 'package:diplom/models/test.dart';
@@ -15,35 +16,50 @@ class Calculator {
     return users.length;
   }
 
-  int calculateAverageTestResult(users, courseTests) {
+  int calculateAverageTestResult(users, courseTests, course) {
     int allCoursePercentage = 0;
-    for(final test in courseTests) {
-      allCoursePercentage = allCoursePercentage + int.parse(test.percentage);
-    }
-    return (allCoursePercentage/users.length).round();
-  }
+    int testsLength = 0;
 
-  String calculateAverageSpendTime(usersLogs, courseBranches) {
-    final List<UserLog> filteredLog = [];
-    //TODO this cycles need to be replaced in the future;
-    for(final userLogs in usersLogs) {
-      final finalUserLog = userLogs.logs;
-      for(final userLog in finalUserLog) {
-        final branchesName = userLog.contentId.split(":");
-        for(final branch in branchesName) {
-          if(courseBranches.contains(branch)){
-            filteredLog.add(userLog);
+    for (Test test in courseTests) {
+      if (course.branches.contains(test.branchId) || (test.courseId != null && test.courseId!.contains(course.course.course))) {
+        allCoursePercentage = allCoursePercentage + int.parse(test.percentage);
+        for(CourseUser user in users) {
+          if(user.userId == test.userId) {
+            testsLength++;
           }
         }
       }
     }
+    return (allCoursePercentage/testsLength).round();
+  }
 
+  List<UserInfo> getCourseUsers(users, course) {
+    List<UserInfo> courseUsers = [];
+
+    for(UserInfo user in users) {
+      for(CourseUser userInCourse in course.users) {
+          if(user.id == userInCourse.userId) {
+            courseUsers.add(user);
+          }
+      }
+    }
+    return courseUsers;
+  }
+
+  String calculateAverageSpendTime(usersLogs, course) {
     int allSpendTime = 0;
-    for(final log in filteredLog) {
-      allSpendTime = allSpendTime + int.parse(log.seconds);
+    int userLogsLength = 0;
+
+    final splittedCourse = course.course.course.split('-')[0];
+
+    for (UserLog userLog in usersLogs) {
+      if ((userLog.contentId != null && userLog.contentId!.contains(course.course.course)) || (userLog.contentId != null && userLog.contentId!.contains(splittedCourse))) {
+        allSpendTime += int.parse(userLog.seconds.toString());
+        userLogsLength++;
+      }
     }
 
-    int averageSpendTime = (allSpendTime/usersLogs.length).round();
+    int averageSpendTime = (allSpendTime/userLogsLength).round();
 
     int spendHours = 0;
     int spendMinutes = 0;
@@ -86,12 +102,15 @@ class Calculator {
     double time = 0;
     int numberOfPages = 0;
 
+    print("HERE1");
     for(var pages in numberOfBranchesChildren) {
       if(pages.length > 0) {
         numberOfPages += int.parse(pages.length.toString());
       }
       numberOfPages += 1;
     }
+
+    print("HERE2");
 
     courseToCompleteTime = numberOfPages * 600;
 
@@ -119,6 +138,8 @@ class Calculator {
       time += branchTime;
     }
 
+    print("HERE3");
+
     progress = (time / (courseToCompleteTime / 100)).round();
 
     if (progress > 100) {
@@ -136,11 +157,25 @@ class Calculator {
 
     for (UserLog userLog in userLogs) {
       if (userLog.contentId!.contains(course) || userLog.contentId!.contains(splittedCourse)) {
-        time += int.parse(userLog.seconds.toString()) / 3600;
+        time += int.parse(userLog.seconds.toString());
       }
     }
 
     return double.parse(time.toStringAsPrecision(1));
+  }
+
+  /// Counts time spent on course
+  double countPercentage(tests, course) {
+    double percentage = 0.0;
+    final splittedCourse = course.split('-')[0];
+
+    for (Test test in tests) {
+      if (test.branchId!.contains(course) || test.branchId!.contains(splittedCourse)) {
+        percentage += double.parse(test.percentage);
+      }
+    }
+
+    return percentage;
   }
 
   /// Counts daily activity
@@ -249,9 +284,45 @@ class Calculator {
     return achievements;
   }
 
+  List<String> getUsersIdByCourse(courses) {
+    List<String> _usersIdInCourses = [];
+    for(Course course in courses) {
+      final users = course.users;
+      for(final user in users) {
+        if(!_usersIdInCourses.contains(user.userId)) {
+          _usersIdInCourses.add(user.userId.toString());
+        }
+      }
+    }
+    return _usersIdInCourses;
+  }
+
+  List<UserLog> getUsersLogByWeek(usersLog, courses) {
+    List<UserLog> _usersLogsByWeek = <UserLog>[];
+    List<String> _weekData = [];
+    List<String> _usersIdInCourses = getUsersIdByCourse(courses);
+
+    for (int i = 0; i < 7; i++) {
+      String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 6 - i)));
+      _weekData.add(currentDate);
+    }
+
+    for(final log in usersLog) {
+      if(_usersIdInCourses.contains(log.userId)) {
+        final time = log.time.split(" ")[0];
+        if(_weekData.contains(time)) {
+          _usersLogsByWeek.add(log);
+        }
+      }
+    }
+
+    return _usersLogsByWeek;
+  }
+
   /// calculates time spent every day on course through last 7 days
-  List<ChartData> getTimeChartData(userWeekLogs, course) {
+  List<ChartData> getTimeChartData(userWeekLogs, courses) {
     List<ChartData> chartData = <ChartData>[];
+    double time = 0.0;
 
     for (int i = 0; i < 7; i++) {
       String currentDay = DateFormat('EEEE').format(DateTime.now().subtract(Duration(days: 6 - i)));
@@ -260,12 +331,150 @@ class Calculator {
       currentDayLogs.addAll(userWeekLogs);
       currentDayLogs.retainWhere((UserLog userLog) => userLog.time!.contains(currentDate));
 
-      chartData.add(ChartData(
-          '${currentDay[0]}${currentDay[1]}${currentDay[2]}',
-          countTime(currentDayLogs, course.toLowerCase())));
+      for(Course course in courses) {
+        time = countTime(currentDayLogs, course.course.course.toLowerCase()) + time;
+      }
+        chartData.add(ChartData(
+            '${currentDay[0]}${currentDay[1]}${currentDay[2]}', time));
+
     }
 
     return chartData;
+  }
+  /// calculates time spent every day on course through last 7 days
+  List<ChartData> getTestChartData(userTests, courses) {
+    List<ChartData> chartData = <ChartData>[];
+    double percentage = 0.0;
+
+
+    for (int i = 0; i < 7; i++) {
+      String currentDay = DateFormat('EEEE').format(DateTime.now().subtract(Duration(days: 6 - i)));
+      String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 6 - i)));
+      List<Test> currentDayTest = [];
+      currentDayTest.addAll(userTests);
+      currentDayTest.retainWhere((Test test) => test.timeStart!.contains(currentDate));
+
+      for(Course course in courses) {
+        percentage = countPercentage(currentDayTest, course.course.course.toLowerCase()) + percentage;
+      }
+      final value;
+      if(percentage == 0 && currentDayTest.length == 0) {
+        value = 0;
+      } else {
+        value = percentage/currentDayTest.length;
+      }
+      chartData.add(ChartData(
+            '${currentDay[0]}${currentDay[1]}${currentDay[2]}', value));
+    }
+    return chartData;
+  }
+
+  /// calculates time spent every day on course through last 7 days
+  List<Data> calculateBestTestResult(userTests, courses, users) {
+    List<Data> chartData = <Data>[];
+    List<Test> weeklyTests = [];
+    List <String> usersId = [];
+
+    for (int i = 0; i < 7; i++) {
+      String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 6 - i)));
+      List<Test> currentDayTest = [];
+      currentDayTest.addAll(userTests);
+      currentDayTest.retainWhere((Test test) => test.timeStart!.contains(currentDate));
+      weeklyTests.addAll(currentDayTest);
+    }
+    for(Test test in weeklyTests) {
+      if(double.parse(test.percentage) > 66.0) {
+        for(final user in users) {
+          if(test.userId == user.id) {
+            chartData.add(Data(key: '${user.name} ${user.surname}', value: test.percentage + " %"));
+          }
+        }
+      }
+    }
+
+    return chartData;
+  }
+
+  /// calculates time spent every day on course through last 7 days
+  List<Data> calculateMostActiveUsers(weekLogs, courses, users) {
+    List<Data> chartData = <Data>[];
+    double time = 0.0;
+    double allTimeForWeek = 0.0;
+    List<String> _usersIdInCourses = getUsersIdByCourse(courses);
+    for(Course course in courses) {
+      allTimeForWeek = countTime(weekLogs, course.course.course) + allTimeForWeek;
+    }
+
+    for(final id in _usersIdInCourses) {
+      time = 0.0;
+      for(UserLog log in weekLogs) {
+        if(id == log.userId) {
+          time = time + double.parse(log.seconds);
+        }
+      }
+
+      if(time > allTimeForWeek/3*2) {
+        for(UserInfo user in users) {
+          if(id == user.id) {
+            chartData.add(Data(key: '${user.name} ${user.surname}', value: time.toString() + " seconds"));
+          }
+        }
+      }
+    }
+
+    return chartData;
+  }
+  /// calculates time spent every day on course through last 7 days
+  double calculateSpentTimeByWeek(usersLogs, courses, currentDate) {
+    print(courses[0]);
+    print(courses[1]);
+    print(currentDate);
+    double usersTime = 0.0;
+    List<String> branches = <String>[];
+
+    branches.addAll(courses.branches);
+
+    for(final userLog in usersLogs) {
+      for(final branch in branches) {
+        if(userLog.contentId.contains(branch) && userLog.time!.contains(currentDate)) {
+          usersTime = usersTime + userLog.seconds;
+        }
+      }
+    }
+    print("HERE");
+    print(usersTime);
+    return usersTime;
+  }
+
+  List<List<ChartData>> countTimeForLast7Days(usersLogs, course, branches) {
+    List<List<ChartData>> weekTime = [];
+
+    for (int i = 0; i < 7; i++) {
+      DateTime date = DateTime.now().subtract(Duration(days: 6 - i));
+      String dateFormat = DateFormat('yyyy-MM-dd').format(date);
+      List<ChartData> dayTime = <ChartData>[];
+      int index = 0;
+
+      for (var branch in branches) {
+        double branchTime = 0;
+
+        for (UserLog userLog in usersLogs) {
+          if (userLog.contentId!.contains(branch) &&
+              userLog.time!.contains(dateFormat)) {
+            branchTime += double.parse(userLog.seconds.toString());
+          }
+        }
+
+        branchTime /= 60;
+        index++;
+
+        dayTime.add(ChartData(index.toString(), branchTime));
+      }
+
+      weekTime.add(dayTime);
+    }
+
+    return weekTime;
   }
 
   double getAverageTestsResult(data) {
@@ -344,7 +553,45 @@ class Calculator {
     return chartData;
   }
 
-  List<ChartData> calculateTimeGapsChartData(List <UsersLogsByCourse> logs) {
+  List<Data> calculateTestsStatistics(courseTests, users) {
+    List<Data> testsData = <Data>[];
+    var user;
+
+    for(final test in courseTests) {
+      if(int.parse(test.percentage) > 75) {
+        user = findUserById(users, test.userId);
+        if(!userInData(testsData, user)) {
+          testsData.add(Data(key: '${user.name} ${user.surname}', value: test.percentage));
+        }
+      }
+    }
+
+    return testsData;
+  }
+
+  UserInfo findUserById(users, id) {
+    UserInfo foundUser = const UserInfo(id: "0", name: "Name", surname: "Surname", login: "Login");
+    for(final user in users) {
+      if(user.id == id) {
+        foundUser = user;
+      }
+    }
+
+    return foundUser;
+  }
+
+  bool userInData(tests, user) {
+    var isUserAlreadyStore = false;
+    for(final test in tests) {
+      if(test.key == '${user.name} ${user.surname}') {
+        isUserAlreadyStore = true;
+      }
+    }
+
+    return isUserAlreadyStore;
+  }
+
+  List<ChartData> calculateTimeGapsChartData(List <UserLog> logs) {
     List<ChartData> timeData = <ChartData>[];
     List courseTestResult = filterUsersTimesByResult(logs);
     timeData.add(ChartData('0 - 20 m', courseTestResult[0]));
@@ -354,18 +601,15 @@ class Calculator {
     return timeData;
   }
 
-  List<ChartData> calculateTimeBranchGapsChartData(List <UsersLogsByCourse> logs, List branches) {
+  List<ChartData> calculateTimeBranchGapsChartData(List <UserLog> logs, List branches) {
     List<ChartData> timeBranchData = <ChartData>[];
     double timeOnBranch = 0;
 
     for(final branch in branches) {
       timeOnBranch = 0;
       for(final userLog in logs) {
-        final finalUserLog = userLog.logs;
-        for(final log in finalUserLog!) {
-          if(log.contentId!.contains(branch)) {
-            timeOnBranch = timeOnBranch + double.parse(log.seconds);
-          }
+        if(userLog.contentId!.contains(branch)) {
+          timeOnBranch = timeOnBranch + double.parse(userLog.seconds);
         }
       }
       timeBranchData.add(ChartData(branch, timeOnBranch/60));

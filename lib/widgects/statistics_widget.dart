@@ -47,7 +47,7 @@ class StatisticsWidget extends StatelessWidget {
                         return BlocBuilder<UsersBloc, UsersState>(
                             builder: (context, usersState) {
                               if (usersState is UsersLoaded) {
-                                return DiagramsWidget(courses: courses, usersLogs: usersLogsState.usersLogs, tests: usersTestsState.userTests, users: usersState.users);
+                                return Container();
                               } else {
                                 return _buildLoading();
                               }
