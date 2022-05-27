@@ -75,9 +75,7 @@ class _WeeklyChartsWidgetState extends State<WeeklyChartsWidget> {
         GraphicWidget(header: "Spent users time by week", data: _userTimeByWeek, height: 100),
         WeeklyTextRow(header: "Most active students for week", data: _mostActiveUsers),
         GraphicWidget(header: "Test course passed by week", data: _userTestByWeek, height: 100),
-        if(_bestTestResult.isNotEmpty) ...[
-          WeeklyTextRow(header: "The best results for a week", data: _bestTestResult)
-        ]
+        WeeklyTextRow(header: "The best results for a week", data: _bestTestResult)
       ],
     );
   }

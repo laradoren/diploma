@@ -170,7 +170,7 @@ class Calculator {
     final splittedCourse = course.split('-')[0];
 
     for (Test test in tests) {
-      if (test.branchId!.contains(course) || test.branchId!.contains(splittedCourse)) {
+      if ((test.branchId != null && test.branchId!.contains(course)) || (test.branchId != null && test.branchId!.contains(splittedCourse))) {
         percentage += double.parse(test.percentage);
       }
     }
@@ -346,25 +346,23 @@ class Calculator {
     List<ChartData> chartData = <ChartData>[];
     double percentage = 0.0;
 
-
     for (int i = 0; i < 7; i++) {
       String currentDay = DateFormat('EEEE').format(DateTime.now().subtract(Duration(days: 6 - i)));
       String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(Duration(days: 6 - i)));
       List<Test> currentDayTest = [];
       currentDayTest.addAll(userTests);
       currentDayTest.retainWhere((Test test) => test.timeStart!.contains(currentDate));
-
       for(Course course in courses) {
         percentage = countPercentage(currentDayTest, course.course.course.toLowerCase()) + percentage;
       }
       final value;
-      if(percentage == 0 && currentDayTest.length == 0) {
+      if(percentage == 0 && currentDayTest.isEmpty) {
         value = 0;
       } else {
         value = percentage/currentDayTest.length;
       }
       chartData.add(ChartData(
-            '${currentDay[0]}${currentDay[1]}${currentDay[2]}', value));
+            '${currentDay[0]}${currentDay[1]}${currentDay[2]}', value/60));
     }
     return chartData;
   }
@@ -426,9 +424,6 @@ class Calculator {
   }
   /// calculates time spent every day on course through last 7 days
   double calculateSpentTimeByWeek(usersLogs, courses, currentDate) {
-    print(courses[0]);
-    print(courses[1]);
-    print(currentDate);
     double usersTime = 0.0;
     List<String> branches = <String>[];
 
@@ -441,8 +436,7 @@ class Calculator {
         }
       }
     }
-    print("HERE");
-    print(usersTime);
+
     return usersTime;
   }
 
